@@ -14,7 +14,6 @@ This is repository the final project for Software Engineering. There was an assi
 
 For the complete scenario please see the main Wiki page.  Click the link below.
 
-**Note:**   To view information about this project please see the Wiki Link below:
 -  [Main Wiki Page](https://github.com/HeinoPortfolio/CS690-FinalProject/wiki)
 -  Information included on the Wiki pages include the following:
      -  Scenario
