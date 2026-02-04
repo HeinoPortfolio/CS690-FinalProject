@@ -1,4 +1,4 @@
-# CS690-FinalProject
+# CS 690 Final Project
 
 Project created by Matthew Heino for CS 690 Software Engineering 
 
@@ -8,18 +8,19 @@ Project created by Matthew Heino for CS 690 Software Engineering
 
 This is repository the final project for Software Engineering. There was an assigned scenario.  A brief synopsis of the scenario is the following:
 
-> Synopsis goes here.
-> some more text
+> Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis 
+> convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia 
+> integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
 
-For the complete scenario please see the main Wiki page.
-
-
---------
+For the complete scenario please see the main Wiki page.  Click the link below.
 
 **Note:**   To view information about this project please see the Wiki Link below:
 -  [Main Wiki Page](https://github.com/HeinoPortfolio/CS690-FinalProject/wiki)
 -  Information included on the Wiki pages includes the following:
      -  Scenario
-     -  Business requirment
+     -  Business requirement
      -  Use cases
      -  Functional and non-functional requirements for the software application
+--------
+
+
