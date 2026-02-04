@@ -16,11 +16,12 @@ For the complete scenario please see the main Wiki page.  Click the link below.
 
 **Note:**   To view information about this project please see the Wiki Link below:
 -  [Main Wiki Page](https://github.com/HeinoPortfolio/CS690-FinalProject/wiki)
--  Information included on the Wiki pages includes the following:
+-  Information included on the Wiki pages include the following:
      -  Scenario
      -  Business requirement
      -  Use cases
      -  Functional and non-functional requirements for the software application
+
 --------
 
 
