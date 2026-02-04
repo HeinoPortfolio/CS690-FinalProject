@@ -12,7 +12,7 @@ This is repository the final project for Software Engineering. There was an assi
 > convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia 
 > integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
 
-For the complete scenario please see the main Wiki page.  Click the link below.
+For the complete scenario and other information please see the main Wiki page.  Click the link below.
 
 -  [Main Wiki Page](https://github.com/HeinoPortfolio/CS690-FinalProject/wiki)
 -  Information included on the Wiki pages include the following:
