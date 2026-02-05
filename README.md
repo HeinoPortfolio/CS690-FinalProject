@@ -18,6 +18,7 @@ This is repository the final project for Software Engineering. There was an assi
      -  Business requirement
      -  Use cases
      -  Functional and non-functional requirements for the software application
+     -  Constraints
 
 --------
 
