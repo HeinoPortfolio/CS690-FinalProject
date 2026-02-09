@@ -19,6 +19,8 @@ This is repository the final project for Software Engineering. There was an assi
      -  Use cases
      -  Functional and non-functional requirements for the software application along with their priority
      -  Constraints
+     -  Prioritization
+     -  Prototype
 
 --------
 
