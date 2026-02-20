@@ -21,6 +21,7 @@ This is repository the final project for Software Engineering. There was an assi
      -  Constraints
      -  Prioritization
      -  Prototype
+     -  Domain model
 
 --------
 
