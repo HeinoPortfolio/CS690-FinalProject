@@ -28,4 +28,13 @@ This is repository the final project for Software Engineering. There was an assi
 
 --------
 
+## Technologies Used
+
+Some of the technologies used to create this project are the following:
+
+- Visual Studio Code
+- Excalidraw (diagrams)
+- Visual Paradigm Online (diagrams)
+- C#
+- Spectre Console for the UI
 
