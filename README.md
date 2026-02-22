@@ -22,7 +22,9 @@ This is repository the final project for Software Engineering. There was an assi
      -  Prioritization
      -  Prototype
      -  Domain model
-     -  Activity Diagrams
+     -  Activity diagrams
+     -  Architecture diagram
+     -  UI Design for the user interface (UI) 
 
 --------
 
