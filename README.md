@@ -24,7 +24,10 @@ This is repository the final project for Software Engineering. There was an assi
      -  Domain model
      -  Activity diagrams
      -  Architecture diagram
-     -  UI Design for the user interface (UI) 
+     -  UI Design for the user interface (UI)
+     -  User document
+     -  Development document
+     -  Deployment document
 
 --------
 
