@@ -8,6 +8,7 @@
 
 # text files
 *.txt
+user.txt
 
 # User-specific files
 *.rsuser
@@ -483,3 +484,4 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+SavingsTrackerProject/SavingsTracker/user.txt
