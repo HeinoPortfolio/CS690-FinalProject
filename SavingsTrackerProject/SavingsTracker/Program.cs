@@ -1,6 +1,9 @@
 ﻿using Spectre.Console;
 using Spectre.Console.Rendering;
 
+
+using System.Globalization;
+
 namespace SavingsTracker;
 
 public class Program
@@ -110,42 +113,63 @@ public class Program
 
     private static void ShowFinancialDashboard(string username)
     {
-        AnsiConsole.Clear();
-        Header();
+        bool inDashboard = true;
 
-        double target = 500.00;
-        double current = 325.50;
-        double remaining = target - current;
+        while (inDashboard){
+            AnsiConsole.Clear();
+            Header();
 
-        // Visual Progress: BreakdownChart for linear visualization
-        var breakdown = new BreakdownChart()
-            .Width(60)
-            .AddItem("Saved", current, Palette.Brand)
-            .AddItem("Remaining", remaining, Palette.TextDim);
+            double target = 500.00;
+            double current = 325.50;
+            double remaining = target - current;
+            double percentComplete = current / target; 
 
-        var summaryTable = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
-        summaryTable.AddColumn("[grey]Metric[/]");
-        summaryTable.AddColumn("[grey]Value[/]");
-        summaryTable.AddRow("Target Goal", $"{target:C2}");
-        summaryTable.AddRow("Current Balance", $"[{Palette.Brand.ToMarkup()}]{current:C2}[/]");
-        summaryTable.AddRow("Amount Left", $"[red]{remaining:C2}[/]");
 
-        AnsiConsole.Write(new Panel(new Rows(
-            new Text($"Progress for {username}", new Style(Palette.Brand)),
-            new Padder(breakdown, new Padding(0, 1, 0, 1)),
-            summaryTable
-        )).Header(new PanelHeader(" Goal Progress ", Justify.Center))
-          .BorderColor(Palette.Border).Padding(2, 1, 2, 1));
+            // Visual Progress: BreakdownChart for linear visualization
+            var breakdown = new BreakdownChart()
+                .Width(60)
+                .AddItem("Saved: $", current, Palette.Brand)
+                .AddItem("Remaining: $", remaining, Palette.TextDim);
 
-        AnsiConsole.Prompt(new SelectionPrompt<string>()
-            .Title("\n[blue]Select Operation:[/]")
-            .AddChoices(["Log Deposit", "Logout"]));
+            var summaryTable = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
+                summaryTable.AddColumn("[grey]Goal Progress[/]");
+                summaryTable.AddColumn("[grey]Value[/]");
+                summaryTable.AddRow("Target Goal", $"{target:C2}");
+                summaryTable.AddRow("Current Balance", $"[{Palette.Brand.ToMarkup()}]{current:C2}[/]");
+                summaryTable.AddRow("Amount Left", $"[red]{remaining:C2}[/]");
+                summaryTable.AddRow("Percentage Left", $"[blue]{percentComplete:P2}[/]");
+
+            AnsiConsole.Write(new Panel(new Rows(
+                new Text($"Progress for {username}", new Style(Palette.Brand)),
+                new Padder(breakdown, new Padding(0, 1, 0, 1)),
+                summaryTable
+            )).Header(new PanelHeader(" Goal Progress ", Justify.Center))
+            .BorderColor(Palette.Border).Padding(2, 1, 2, 1));
+
+        var choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
+            .Title($"[{Palette.TextDim.ToMarkup()}]SELECT OPERATION[/]")
+            .PageSize(10).WrapAround(true)
+            .HighlightStyle(new Style(Palette.SelectionFg, Palette.SelectionBg, Decoration.Bold))
+            .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]SAVINGS GOALS[/]", DashboardMenu.GoalOptions)
+            .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]TRANSACTIONS[/]", DashboardMenu.TransactionOptions)
+            .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]ANALYSIS[/]", DashboardMenu.AnalysisOptions)
+            .AddChoices(DashboardMenu.Logout));
+
+        if(choice == DashboardMenu.Logout) inDashboard = false;
+        else
+        {
+           AnsiConsole.Write(new Rule().RuleStyle(Palette.Border));
+           AnsiConsole.MarkupLine($"[{Palette.Brand.ToMarkup()}]System:[/] Executing {choice}...");
+           Console.ReadKey(true);   
+        }
+        
+    }
     }
 
     private static void Header()
     {
         AnsiConsole.Write(new Rule($"[bold {Palette.Brand.ToMarkup()}] SAVINGS TRACKER [/]").RuleStyle(Palette.Border).Centered());
-        AnsiConsole.Write(new Text("  v1.0 Enterprise Edition", new Style(Palette.TextDim)).Centered());
+        AnsiConsole.Write(new Text(" v1.0 ", new Style(Palette.TextDim)).Centered());
         AnsiConsole.WriteLine();
     }
 
