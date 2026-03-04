@@ -1,6 +1,9 @@
 ﻿using Spectre.Console;
 using Spectre.Console.Rendering;
 
+
+using System.Globalization;
+
 namespace SavingsTracker;
 
 public class Program
@@ -116,19 +119,22 @@ public class Program
         double target = 500.00;
         double current = 325.50;
         double remaining = target - current;
+        double percentComplete = current / target; 
+
 
         // Visual Progress: BreakdownChart for linear visualization
         var breakdown = new BreakdownChart()
             .Width(60)
-            .AddItem("Saved", current, Palette.Brand)
-            .AddItem("Remaining", remaining, Palette.TextDim);
+            .AddItem("Saved: $", current, Palette.Brand)
+            .AddItem("Remaining: $", remaining, Palette.TextDim);
 
         var summaryTable = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
-        summaryTable.AddColumn("[grey]Metric[/]");
+        summaryTable.AddColumn("[grey]Goal Progress[/]");
         summaryTable.AddColumn("[grey]Value[/]");
         summaryTable.AddRow("Target Goal", $"{target:C2}");
         summaryTable.AddRow("Current Balance", $"[{Palette.Brand.ToMarkup()}]{current:C2}[/]");
         summaryTable.AddRow("Amount Left", $"[red]{remaining:C2}[/]");
+        summaryTable.AddRow("Percentage Left", $"[blue]{percentComplete:P2}[/]");
 
         AnsiConsole.Write(new Panel(new Rows(
             new Text($"Progress for {username}", new Style(Palette.Brand)),
@@ -145,7 +151,7 @@ public class Program
     private static void Header()
     {
         AnsiConsole.Write(new Rule($"[bold {Palette.Brand.ToMarkup()}] SAVINGS TRACKER [/]").RuleStyle(Palette.Border).Centered());
-        AnsiConsole.Write(new Text("  v1.0 Enterprise Edition", new Style(Palette.TextDim)).Centered());
+        AnsiConsole.Write(new Text("  v1.0 ", new Style(Palette.TextDim)).Centered());
         AnsiConsole.WriteLine();
     }
 
