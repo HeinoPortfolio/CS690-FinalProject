@@ -70,12 +70,19 @@ public class Goal
             var calGrid = new Grid().AddColumns(2).AddRow(new Panel(startCal)
                 .Header(" Start ").BorderColor(Palette.Border), new Panel(endCal).Header(" Finish ").BorderColor(Palette.Border));
 
-            var table = new Table().BorderColor(Palette.Border).Expand().AddColumn("Information").AddColumn("Details");
-            table.AddRow("Goal Name", name).AddRow("Target Amount", $"{amount:C2}").AddRow("Start Date", tempGoal.CreatedAt.ToString("MMMM dd, yyyy")).AddRow("Target End Date", tempGoal.EndDate.ToString("MMMM dd, yyyy"));
+            var table = new Table().BorderColor(Palette.Border).Expand().AddColumn("Information")
+                .AddColumn("Details");
+            table.AddRow("Goal Name", name)
+                .AddRow("Target Amount", $"{amount:C2}")
+                .AddRow("Start Date", tempGoal.CreatedAt.ToString("MMMM dd, yyyy"))
+                .AddRow("Target End Date", tempGoal.EndDate.ToString("MMMM dd, yyyy"));
 
-            AnsiConsole.Write(new Panel(new Rows(new Padder(calGrid, new Padding(0, 0, 0, 1)), table)).Header($" [bold {Palette.Brand.ToMarkup()}]Review Your Goal[/] ").BorderColor(Palette.Brand).Padding(2, 1, 2, 1));
+            AnsiConsole.Write(new Panel(new Rows(new Padder(calGrid, new Padding(0, 0, 0, 1)), table))
+                .Header($" [bold {Palette.Brand.ToMarkup()}]Review Your Goal[/] ")
+                .BorderColor(Palette.Brand).Padding(2, 1, 2, 1));
 
             if (AnsiConsole.Confirm("Is this information correct?")) return tempGoal;
+            
             if (!AnsiConsole.Confirm("Try again?")) return null;
         }
     }

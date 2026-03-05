@@ -17,6 +17,7 @@ public class Program
         _userDatabase = UserRepository.LoadUsers();
 
         int selectedIndex = 0;
+
         bool isRunning = true;
 
         while (isRunning)
@@ -25,19 +26,19 @@ public class Program
             Header(); 
 
             // Live display for the main selection dashboard
-            await AnsiConsole.Live(GetMainContainer(selectedIndex))
-                .StartAsync(async ctx =>
+            await AnsiConsole.Live(GetMainContainer(selectedIndex)).StartAsync(async ctx =>
                 {
                     ctx.Refresh();
+
                     while (true)
                     {
                         var key = Console.ReadKey(true).Key;
+
                         if (key == ConsoleKey.UpArrow)
                             selectedIndex = (selectedIndex == 0) ? menuItems.Length - 1 : selectedIndex - 1;
                         else if (key == ConsoleKey.DownArrow)
                             selectedIndex = (selectedIndex == menuItems.Length - 1) ? 0 : selectedIndex + 1;
-                        else if (key == ConsoleKey.Enter)
-                            break;
+                        else if (key == ConsoleKey.Enter) break;
 
                         ctx.UpdateTarget(GetMainContainer(selectedIndex));
                     }
@@ -50,7 +51,7 @@ public class Program
             else isRunning = false;
         }
 
-        AnsiConsole.MarkupLine("[bold red]Goodbye!.[/]");
+        AnsiConsole.MarkupLine("[bold blue]Goodbye!.[/]");
     }
 
     private static void CreateAccount()
@@ -63,6 +64,7 @@ public class Program
 
         // Review Table to verify information before saving
         var table = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
+
         table.AddColumn(new TableColumn("Field").Centered());
         table.AddColumn(new TableColumn("Value").LeftAligned());
         table.AddRow("Username", username);
@@ -101,7 +103,12 @@ public class Program
 
         if (user != null)
         {
-            user.ActiveGoal = UserRepository.LoadGoal(user.Username);
+            //user.ActiveGoal = UserRepository.LoadGoal(user.Username);
+            //ShowFinancialDashboard(user);
+
+            var result = UserRepository.LoadGoal(user.Username);
+            user.ActiveGoal = result.goal;
+            user.CurrentSavings = result.savings;
             ShowFinancialDashboard(user);
         }
         else
@@ -112,11 +119,28 @@ public class Program
         }
     }
 
+    private static void LogContribution(User user)
+    {
+         if (user.ActiveGoal == null) return;
+         
+        AnsiConsole.Clear(); Header();
+        AnsiConsole.Write(new Rule($"[{Palette.Brand.ToMarkup()}]Log Contribution[/]").Centered());
+        
+        var amount = AnsiConsole.Prompt(new TextPrompt<double>($"[{Palette.Accent.ToMarkup()}]>[/] Amount to contribute:")
+            .Validate(n => n > 0 ? ValidationResult.Success() : ValidationResult.Error("[red]Must be > 0[/]")));
+
+        user.CurrentSavings += amount;
+
+        UserRepository.SaveGoal(user.Username, user.ActiveGoal, user.CurrentSavings);
+
+        AnsiConsole.MarkupLine($"[green]✓[/] {amount:C2} added! New Total: {user.CurrentSavings:C2}");
+        Thread.Sleep(1000);
+    }
     private static void ShowFinancialDashboard(User user)
     {
 
+        bool inDashboard = true;
 
-    bool inDashboard = true;
         while (inDashboard)
         {
             AnsiConsole.Clear();
@@ -125,36 +149,64 @@ public class Program
             if (user.ActiveGoal != null)
             {
                 var g = user.ActiveGoal;
-                double current = 0; 
+                double current = user.CurrentSavings;
+
+
+                double remaining = g.TargetAmount - current;   // new
+                double target = g.TargetAmount;
+                double percentComplete = current / target;
+
+
                 var breakdown = new BreakdownChart().Width(60)
-                    .AddItem("Saved", current, Palette.Brand)
-                    .AddItem("Remaining", g.TargetAmount - current, Palette.TextDim);
+                    .AddItem("Saved: $", current, Palette.StatusBar)  // Palette.Brans
+                    .AddItem("Remaining: $", Math.Max(0, g.TargetAmount - current), Palette.TextDim)
+                    .AddItem("Percent Remaining (%): ",  (1 - percentComplete) * 100, Palette.TextDim);
+
+                var summaryTable = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
+                    summaryTable.AddColumn("[grey]Goal Progress[/]");
+                    summaryTable.AddColumn("[grey]Value[/]");
+                    summaryTable.AddRow("Target Goal", $"{target:C2}");
+                    summaryTable.AddRow("Current Balance", $"[{Palette.Brand.ToMarkup()}]{current:C2}[/]");
+                    summaryTable.AddRow("Amount Left", $"[red]{remaining:C2}[/]");
+                    summaryTable.AddRow("Percentage Complete: ", $"[blue]{percentComplete:P2}[/]");
+
+              
                 AnsiConsole.Write(new Panel(new Rows(
                     new Text($"Goal: {g.Name}", new Style(Palette.Brand, decoration: Decoration.Bold)),
                     new Text($"Target End Date: {g.EndDate:MMMM dd, yyyy}", new Style(Palette.TextDim)),
                     new Rule().RuleStyle(Palette.Border.ToMarkup()),
-                    new Padder(breakdown, new Padding(0, 1, 0, 1))
-                )).Header($" Progress for {user.Username} ").BorderColor(Palette.Border).Padding(2, 1, 2, 1));
+                    new Padder(breakdown, new Padding(0, 1, 0, 1)), summaryTable
+                    )).Header($" Progress for {user.Username} ")
+                    
+                    .BorderColor(Palette.Border).Padding(2, 1, 2, 1));
             }
-            else AnsiConsole.MarkupLine($"[yellow]![/] No active goal found. Select 'Create a new savings goal' to begin.");
+            else AnsiConsole.MarkupLine($"[yellow]! No active goal found. Select 'Create a new savings goal' to begin.[/]");
 
-            var choice = AnsiConsole.Prompt(new SelectionPrompt<string>().Title($"[{Palette.TextDim.ToMarkup()}]SELECT OPERATION[/]")
+            var choice = AnsiConsole.Prompt( new SelectionPrompt<string>().Title($"[{Palette.TextDim.ToMarkup()}]SELECT OPERATION[/]")
                 .HighlightStyle(new Style(Palette.SelectionFg, Palette.SelectionBg, Decoration.Bold))
+                .AddChoices(DashboardMenu.Logout) 
                 .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]SAVINGS GOALS[/]", DashboardMenu.GoalOptions)
                 .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]TRANSACTIONS[/]", DashboardMenu.TransactionOptions)
-                .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]ANALYSIS[/]", DashboardMenu.AnalysisOptions)
-                .AddChoices(DashboardMenu.Logout));
+                .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]ANALYSIS[/]") // Note: Groups can also be used as headers
+                .AddChoices(DashboardMenu.AnalysisOptions)); 
+
 
             if (choice == DashboardMenu.Logout) inDashboard = false;
             else if (choice == "Create a new savings goal")
             {
                 var newGoal = Goal.Create();
-                if (newGoal != null) { user.ActiveGoal = newGoal; UserRepository.SaveGoal(user.Username, newGoal); }
+                if (newGoal != null) 
+                { 
+                    user.ActiveGoal = newGoal;
+                    user.CurrentSavings = 0; 
+                    UserRepository.SaveGoal(user.Username, newGoal, 0); 
+                }
             }
-             else
+            else if (choice == "Log a contribution") LogContribution(user);
+            else
             {
                 AnsiConsole.Write(new Rule().RuleStyle(Palette.Border));
-                AnsiConsole.MarkupLine($"[{Palette.Brand.ToMarkup()}]System:[/] Executing {choice}...");
+                AnsiConsole.MarkupLine($"[{Palette.Brand.ToMarkup()}]System:[/] Executing {choice}... Hit a key!");
                 Console.ReadKey(true);   
             }
         }

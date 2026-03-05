@@ -30,18 +30,30 @@ public static class UserRepository
         File.AppendAllLines(FilePath, new [] {$"{user.Username}:{user.Password}"});
     }
 
-    public static void SaveGoal(string username, Goal goal)
+    public static void SaveGoal(string username, Goal goal, double currentSavings)
     {
-        string content = $"{goal.Name}|{goal.TargetAmount}|{goal.TimeFrame}|{goal.CreatedAt:O}|{goal.EndDate:O}";
+       
+        string content = $"{goal.Name}|{goal.TargetAmount}|{goal.TimeFrame}|{goal.CreatedAt:O}|{goal.EndDate:O}|{currentSavings}";
         File.WriteAllText($"{username}_goal.txt", content);
     }
 
-    public static Goal? LoadGoal(string username)
+    public static (Goal? goal, double savings) LoadGoal(string username)
     {
         string path = $"{username}_goal.txt";
-        if (!File.Exists(path)) return null;
+
+        if (!File.Exists(path)) return (null, 0);
+
         var p = File.ReadAllText(path).Split('|');
-        return p.Length == 5 ? new Goal(p[0], double.Parse(p[1]), p[2], DateTime.Parse(p[3]), DateTime.Parse(p[4])) : null;
+
+        if (p.Length == 6)
+        {
+            var goal = new Goal(p[0], double.Parse(p[1]), p[2], DateTime.Parse(p[3]), DateTime.Parse(p[4]));
+
+            return (goal, double.Parse(p[5]));
+        }
+
+        return(null, 0);
+        //return p.Length == 5 ? new Goal(p[0], double.Parse(p[1]), p[2], DateTime.Parse(p[3]), DateTime.Parse(p[4])) : null;
     }
 
 }
