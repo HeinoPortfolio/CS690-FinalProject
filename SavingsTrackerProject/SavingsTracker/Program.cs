@@ -51,7 +51,7 @@ public class Program
             else isRunning = false;
         }
 
-        AnsiConsole.MarkupLine("[bold red]Goodbye!.[/]");
+        AnsiConsole.MarkupLine("[bold blue]Goodbye!.[/]");
     }
 
     private static void CreateAccount()
@@ -149,30 +149,47 @@ public class Program
             if (user.ActiveGoal != null)
             {
                 var g = user.ActiveGoal;
-                //double current = 0; 
                 double current = user.CurrentSavings;
 
-                var breakdown = new BreakdownChart().Width(60)
-                    .AddItem("Saved", current, Palette.Brand)
-                    .AddItem("Remaining", Math.Max(0, g.TargetAmount - current), Palette.TextDim);
-                    //.AddItem("Remaining", g.TargetAmount - current, Palette.TextDim);
 
+                double remaining = g.TargetAmount - current;   // new
+                double target = g.TargetAmount;
+                double percentComplete = current / target;
+
+
+                var breakdown = new BreakdownChart().Width(60)
+                    .AddItem("Saved: $", current, Palette.StatusBar)  // Palette.Brans
+                    .AddItem("Remaining: $", Math.Max(0, g.TargetAmount - current), Palette.TextDim)
+                    .AddItem("Percent Remaining (%): ",  (1 - percentComplete) * 100, Palette.TextDim);
+
+                var summaryTable = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
+                    summaryTable.AddColumn("[grey]Goal Progress[/]");
+                    summaryTable.AddColumn("[grey]Value[/]");
+                    summaryTable.AddRow("Target Goal", $"{target:C2}");
+                    summaryTable.AddRow("Current Balance", $"[{Palette.Brand.ToMarkup()}]{current:C2}[/]");
+                    summaryTable.AddRow("Amount Left", $"[red]{remaining:C2}[/]");
+                    summaryTable.AddRow("Percentage Complete: ", $"[blue]{percentComplete:P2}[/]");
+
+              
                 AnsiConsole.Write(new Panel(new Rows(
                     new Text($"Goal: {g.Name}", new Style(Palette.Brand, decoration: Decoration.Bold)),
                     new Text($"Target End Date: {g.EndDate:MMMM dd, yyyy}", new Style(Palette.TextDim)),
                     new Rule().RuleStyle(Palette.Border.ToMarkup()),
-                    new Padder(breakdown, new Padding(0, 1, 0, 1))
+                    new Padder(breakdown, new Padding(0, 1, 0, 1)), summaryTable
                     )).Header($" Progress for {user.Username} ")
+                    
                     .BorderColor(Palette.Border).Padding(2, 1, 2, 1));
             }
-            else AnsiConsole.MarkupLine($"[yellow]![/] No active goal found. Select 'Create a new savings goal' to begin.");
+            else AnsiConsole.MarkupLine($"[yellow]! No active goal found. Select 'Create a new savings goal' to begin.[/]");
 
-            var choice = AnsiConsole.Prompt(new SelectionPrompt<string>().Title($"[{Palette.TextDim.ToMarkup()}]SELECT OPERATION[/]")
+            var choice = AnsiConsole.Prompt( new SelectionPrompt<string>().Title($"[{Palette.TextDim.ToMarkup()}]SELECT OPERATION[/]")
                 .HighlightStyle(new Style(Palette.SelectionFg, Palette.SelectionBg, Decoration.Bold))
+                .AddChoices(DashboardMenu.Logout) 
                 .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]SAVINGS GOALS[/]", DashboardMenu.GoalOptions)
                 .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]TRANSACTIONS[/]", DashboardMenu.TransactionOptions)
-                .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]ANALYSIS[/]", DashboardMenu.AnalysisOptions)
-                .AddChoices(DashboardMenu.Logout));
+                .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]ANALYSIS[/]") // Note: Groups can also be used as headers
+                .AddChoices(DashboardMenu.AnalysisOptions)); 
+
 
             if (choice == DashboardMenu.Logout) inDashboard = false;
             else if (choice == "Create a new savings goal")

@@ -32,7 +32,7 @@ public static class UserRepository
 
     public static void SaveGoal(string username, Goal goal, double currentSavings)
     {
-       // string content = $"{goal.Name}|{goal.TargetAmount}|{goal.TimeFrame}|{goal.CreatedAt:O}|{goal.EndDate:O}";
+       
         string content = $"{goal.Name}|{goal.TargetAmount}|{goal.TimeFrame}|{goal.CreatedAt:O}|{goal.EndDate:O}|{currentSavings}";
         File.WriteAllText($"{username}_goal.txt", content);
     }
