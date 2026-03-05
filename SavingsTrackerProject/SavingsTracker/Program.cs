@@ -165,7 +165,8 @@ public class Program
                 var breakdown = new BreakdownChart().Width(60)
                     .AddItem("Saved: $", current, Palette.StatusBar)  // Palette.Brans
                     .AddItem("Remaining: $", Math.Max(0, g.TargetAmount - current), Palette.TextDim)
-                    .AddItem("Percent Remaining (%): ",  (1 - percentComplete) * 100, Palette.TextDim);
+                    .AddItem("Percent Remaining (%): ", Math.Round((1 - percentComplete) * 100, 2), Palette.TextDim);
+
 
                 var summaryTable = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
                     summaryTable.AddColumn("[grey]Goal Progress[/]");
