@@ -157,13 +157,13 @@ public class Program
                 double current = user.CurrentSavings;
 
 
-                double remaining = g.TargetAmount - current;   // new
+                double remaining = g.TargetAmount - current;  
                 double target = g.TargetAmount;
                 double percentComplete = current / target;
 
 
                 var breakdown = new BreakdownChart().Width(60)
-                    .AddItem("Saved: $", current, Palette.StatusBar)  // Palette.Brans
+                    .AddItem("Saved: $", current, Palette.StatusBar) 
                     .AddItem("Remaining: $", Math.Max(0, g.TargetAmount - current), Palette.TextDim)
                     .AddItem("Percent Remaining (%): ", Math.Round((1 - percentComplete) * 100, 2), Palette.TextDim);
 
@@ -193,7 +193,7 @@ public class Program
                 .AddChoices(DashboardMenu.Logout) 
                 .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]SAVINGS GOALS[/]", DashboardMenu.GoalOptions)
                 .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]TRANSACTIONS[/]", DashboardMenu.TransactionOptions)
-                .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]ANALYSIS[/]") // Note: Groups can also be used as headers
+                .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]ANALYSIS[/]")
                 .AddChoices(DashboardMenu.AnalysisOptions)); 
 
 
