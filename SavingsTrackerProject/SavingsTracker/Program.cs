@@ -3,7 +3,7 @@ using Spectre.Console.Rendering;
 
 
 using System.Globalization;
-
+using System.Text;
 namespace SavingsTracker;
 
 public class Program
@@ -13,6 +13,11 @@ public class Program
 
     public static async Task Main(string[] args)
     {
+        
+        Console.OutputEncoding = Encoding.UTF8;
+
+        Console.InputEncoding = Encoding.UTF8;
+        
         // Load existing users from the text file at startup
         _userDatabase = UserRepository.LoadUsers();
 
