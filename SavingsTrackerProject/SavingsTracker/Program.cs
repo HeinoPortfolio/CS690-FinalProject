@@ -164,8 +164,8 @@ public class Program
         var chart = new BreakdownChart()
             .FullSize()
             //.ShowPercentage()
-            .AddItem("Saved", current, Palette.Brand)
-            .AddItem("Remaining", remaining, Palette.TextDim);
+            .AddItem("Saved: $", current, Palette.Brand)
+            .AddItem("Remaining: $", remaining, Palette.TextDim);
 
         var infoTable = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
             infoTable.AddColumn("[grey]Timeline & Totals[/]");
@@ -220,18 +220,18 @@ public class Program
 
             if (user.ActiveGoal != null)
             {
-                var g = user.ActiveGoal;
+                var goal = user.ActiveGoal;
                 double current = user.CurrentSavings;
 
 
-                double remaining = g.TargetAmount - current;  
-                double target = g.TargetAmount;
+                double remaining = goal.TargetAmount - current;  
+                double target = goal.TargetAmount;
                 double percentComplete = current / target;
 
 
                 var breakdown = new BreakdownChart().Width(60)
                     .AddItem("Saved: $", current, Palette.StatusBar) 
-                    .AddItem("Remaining: $", Math.Max(0, g.TargetAmount - current), Palette.TextDim)
+                    .AddItem("Remaining: $", Math.Max(0, goal.TargetAmount - current), Palette.TextDim)
                     .AddItem("Percent Remaining (%): ", Math.Round((1 - percentComplete) * 100, 2), Palette.TextDim);
 
 
@@ -245,8 +245,8 @@ public class Program
 
               
                 AnsiConsole.Write(new Panel(new Rows(
-                    new Text($"Goal: {g.Name}", new Style(Palette.Brand, decoration: Decoration.Bold)),
-                    new Text($"Target End Date: {g.EndDate:MMMM dd, yyyy}", new Style(Palette.TextDim)),
+                    new Text($"Goal: {goal.Name}", new Style(Palette.Brand, decoration: Decoration.Bold)),
+                    new Text($"Target End Date: {goal.EndDate:MMMM dd, yyyy}", new Style(Palette.TextDim)),
                     new Rule().RuleStyle(Palette.Border.ToMarkup()),
                     new Padder(breakdown, new Padding(0, 1, 0, 1)), summaryTable
                     )).Header($" Progress for {user.Username} ")
@@ -283,7 +283,7 @@ public class Program
             else
             {
                 AnsiConsole.Write(new Rule().RuleStyle(Palette.Border));
-                AnsiConsole.MarkupLine($"[{Palette.Brand.ToMarkup()}]System:[/] Executing {choice}... Hit a key!");
+                AnsiConsole.MarkupLine($"[{Palette.Brand.ToMarkup()}]Not yet implemented:[/] Will not be executing {choice}... Hit a key to be taken to main menu!");
                 Console.ReadKey(true);   
             }
         }

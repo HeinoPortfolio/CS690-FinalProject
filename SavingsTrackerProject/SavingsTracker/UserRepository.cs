@@ -58,7 +58,7 @@ public static class UserRepository
                 double.Parse(infile[1].Trim()),
                 infile[2].Trim(),
                 DateTime.Parse(infile[3]),
-                 DateTime.Parse(infile[4]));
+                DateTime.Parse(infile[4]));
 
            double savings = double.Parse(infile[5].Trim());
 
