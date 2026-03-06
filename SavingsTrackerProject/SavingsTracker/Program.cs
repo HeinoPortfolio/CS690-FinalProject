@@ -108,12 +108,13 @@ public class Program
 
         if (user != null)
         {
-            //user.ActiveGoal = UserRepository.LoadGoal(user.Username);
-            //ShowFinancialDashboard(user);
 
-            var result = UserRepository.LoadGoal(user.Username);
-            user.ActiveGoal = result.goal;
-            user.CurrentSavings = result.savings;
+            var (goal, savings, history) = UserRepository.LoadGoal(user.Username);
+            user.ActiveGoal = goal;
+            user.CurrentSavings = savings;
+
+            user.Contributions = history;
+
             ShowFinancialDashboard(user);
         }
         else
@@ -135,12 +136,78 @@ public class Program
             .Validate(n => n > 0 ? ValidationResult.Success() : ValidationResult.Error("[red]Must be > 0[/]")));
 
         user.CurrentSavings += amount;
+        user.Contributions.Add(new Contribution(amount, DateTime.Now));
 
-        UserRepository.SaveGoal(user.Username, user.ActiveGoal, user.CurrentSavings);
+        UserRepository.SaveGoal(user.Username, user.ActiveGoal
+            , user.CurrentSavings
+            , user.Contributions);
 
         AnsiConsole.MarkupLine($"[green]✓[/] {amount:C2} added! New Total: {user.CurrentSavings:C2}");
         Thread.Sleep(1000);
     }
+
+    // New
+    private static void MonitorProgress(User user)
+    {
+        if (user.ActiveGoal == null) return;
+        if (user.Contributions == null) user.Contributions = new List<Contribution>();
+
+        AnsiConsole.Clear();
+        Header();
+
+        var goal = user.ActiveGoal;
+        double current = user.CurrentSavings;
+    
+        double target = goal.TargetAmount > 0 ? goal.TargetAmount : 1; 
+        double remaining = Math.Max(0, target - current);
+        
+        var chart = new BreakdownChart()
+            .FullSize()
+            //.ShowPercentage()
+            .AddItem("Saved", current, Palette.Brand)
+            .AddItem("Remaining", remaining, Palette.TextDim);
+
+        var infoTable = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
+            infoTable.AddColumn("[grey]Timeline & Totals[/]");
+            infoTable.AddColumn(new TableColumn("[grey]Value[/]").RightAligned());
+            infoTable.AddRow("Goal Start Date", goal.CreatedAt.ToString("MMMM dd, yyyy") ?? "N/A");
+            infoTable.AddRow("Target End Date", goal.EndDate.ToString("MMMM dd, yyyy") ?? "N/A");
+            infoTable.AddEmptyRow();
+            infoTable.AddRow("Target Goal Amount", $"{target:C2}");
+            infoTable.AddRow("Total Amount Saved", $"[green]{current:C2}[/]");
+
+        var historyList = new List<IRenderable>();
+        
+        if (user.Contributions.Any())
+        {
+            foreach (var cont in user.Contributions)
+            {
+                historyList.Add(new Text($" • {cont.Amount:C2} logged on {cont.Date:MMMM dd, yyyy}", new Style(Palette.TextDim)));
+            }
+        }
+        else
+        {
+            historyList.Add(new Text(" No contributions logged yet.", new Style(Palette.TextDim)));
+        }
+
+        var mainLayout = new Panel(new Rows(
+            new Text($"Progress Analysis: {goal.Name}", new Style(Palette.Brand, decoration: Decoration.Bold)),
+            new Padder(chart, new Padding(0, 1, 0, 1)),
+            infoTable,
+            new Panel(new Rows(historyList)).Header(" Contribution History ").BorderColor(Palette.Border)
+        ))
+        .BorderColor(Palette.Border)
+        .Padding(2, 1, 2, 1);
+
+        AnsiConsole.Write(mainLayout);
+
+        AnsiConsole.WriteLine();
+        // Use a manual wait to prevent the "reverting" issue
+        AnsiConsole.MarkupLine($"[{Palette.Brand.ToMarkup()}]Analysis Complete.[/] Press [yellow]ENTER[/] to return...");
+        Console.ReadLine(); 
+    }
+
+
     private static void ShowFinancialDashboard(User user)
     {
 
@@ -205,10 +272,14 @@ public class Program
                 { 
                     user.ActiveGoal = newGoal;
                     user.CurrentSavings = 0; 
-                    UserRepository.SaveGoal(user.Username, newGoal, 0); 
+                    UserRepository.SaveGoal(user.Username, newGoal, 0, user.Contributions); 
                 }
             }
             else if (choice == "Log a contribution") LogContribution(user);
+            else if (choice == "Monitor progress toward the goal")
+            {
+                MonitorProgress(user);
+            }
             else
             {
                 AnsiConsole.Write(new Rule().RuleStyle(Palette.Border));
