@@ -30,32 +30,62 @@ public static class UserRepository
         File.AppendAllLines(FilePath, new [] {$"{user.Username}:{user.Password}"});
     }
 
-    public static void SaveGoal(string username, Goal goal, double currentSavings)
+    public static void SaveGoal(string username, Goal goal, double currentSavings, List<Contribution> history)
     {
        
-        string content = $"{goal.Name}|{goal.TargetAmount}|{goal.TimeFrame}|{goal.CreatedAt:O}|{goal.EndDate:O}|{currentSavings}";
+        string historyData = string.Join(";", history.Select(c => $"{c.Amount}_{c.Date.ToString("O")}"));
+
+
+        string content = $"{goal.Name}|{goal.TargetAmount}|{goal.TimeFrame}|{goal.CreatedAt.ToString("O")}|{goal.EndDate.ToString("O")}|{currentSavings}|{historyData}";
+
         File.WriteAllText($"{username}_goal.txt", content);
     }
 
-    public static (Goal? goal, double savings) LoadGoal(string username)
+    public static (Goal? goal, double savings, List<Contribution> history) LoadGoal(string username)
     {
         string path = $"{username}_goal.txt";
 
-        if (!File.Exists(path)) return (null, 0);
+        var history = new List<Contribution>();
 
-        var p = File.ReadAllText(path).Split('|');
+        if (!File.Exists(path)) return (null, 0, history);
 
-        if (p.Length == 6)
+        var infile = File.ReadAllText(path).Split('|');
+
+        if (infile.Length >= 6)
         {
-            var goal = new Goal(p[0], double.Parse(p[1]), p[2], DateTime.Parse(p[3]), DateTime.Parse(p[4]));
+            var goal = new Goal(
+                infile[0], 
+                double.Parse(infile[1].Trim()),
+                infile[2].Trim(),
+                DateTime.Parse(infile[3]),
+                DateTime.Parse(infile[4]));
 
-            return (goal, double.Parse(p[5]));
+           double savings = double.Parse(infile[5].Trim());
+
+           if(infile.Length >= 7 && !string.IsNullOrWhiteSpace(infile[6]))
+            {
+                var entries = infile[6].Split(';', StringSplitOptions.RemoveEmptyEntries);
+
+                foreach(var entry in entries)
+                {
+                    var parts = entry.Split('_');
+
+                    if(parts.Length == 2)
+                    {
+                        history.Add(new Contribution(
+                            double.Parse(parts[0])
+                            , DateTime.Parse(parts[1])
+                        ));
+                    }
+                }
+            }
+
+            return(goal, savings, history);
         }
 
-        return(null, 0);
-        //return p.Length == 5 ? new Goal(p[0], double.Parse(p[1]), p[2], DateTime.Parse(p[3]), DateTime.Parse(p[4])) : null;
+        return(null, 0, history);
+        
     }
-
 }
 
 
