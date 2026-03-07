@@ -132,7 +132,7 @@ public class Program
         AnsiConsole.Clear(); Header();
         AnsiConsole.Write(new Rule($"[{Palette.Brand.ToMarkup()}]Log Contribution[/]").Centered());
         
-        var amount = AnsiConsole.Prompt(new TextPrompt<double>($"[{Palette.Accent.ToMarkup()}]>[/] Amount to contribute:")
+        var amount = AnsiConsole.Prompt(new TextPrompt<double>($"[{Palette.Accent.ToMarkup()}]>[/] Amount to contribute: $")
             .Validate(n => n > 0 ? ValidationResult.Success() : ValidationResult.Error("[red]Must be > 0[/]")));
 
         user.CurrentSavings += amount;
@@ -142,7 +142,7 @@ public class Program
             , user.CurrentSavings
             , user.Contributions);
 
-        AnsiConsole.MarkupLine($"[green]✓[/] {amount:C2} added! New Total: {user.CurrentSavings:C2}");
+        AnsiConsole.MarkupLine($"[green]✓[/] {amount:C2} added! New Total: $ {user.CurrentSavings:C2}");
         Thread.Sleep(1000);
     }
 
