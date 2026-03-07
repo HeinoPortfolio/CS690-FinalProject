@@ -1,9 +1,7 @@
 ﻿using Spectre.Console;
 using Spectre.Console.Rendering;
-
-
-//using System.Globalization;
 using System.Text;
+
 namespace SavingsTracker;
 
 public class Program
@@ -48,6 +46,7 @@ public class Program
                         ctx.UpdateTarget(GetMainContainer(selectedIndex));
                     }
                 });
+
 
             string choice = menuItems[selectedIndex];
 
@@ -144,6 +143,7 @@ public class Program
 
         AnsiConsole.MarkupLine($"[green]✓[/] {amount:C2} added! New Total: $ {user.CurrentSavings:C2}");
         Thread.Sleep(2000);
+
     }
 
     private static void MonitorProgress(User user)
@@ -326,6 +326,9 @@ public class Program
             }
         }
     }
+
+
+
 
     private static void Header()
     {
