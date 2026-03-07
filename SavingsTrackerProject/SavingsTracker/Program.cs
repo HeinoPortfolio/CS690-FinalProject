@@ -162,7 +162,6 @@ public class Program
         
         var chart = new BreakdownChart()
             .FullSize()
-            //.ShowPercentage()
             .AddItem("Saved: $", current, Palette.Brand)
             .AddItem("Remaining: $", remaining, Palette.TextDim);
 
