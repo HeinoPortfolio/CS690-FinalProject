@@ -143,10 +143,9 @@ public class Program
             , user.Contributions);
 
         AnsiConsole.MarkupLine($"[green]✓[/] {amount:C2} added! New Total: $ {user.CurrentSavings:C2}");
-        Thread.Sleep(1000);
+        Thread.Sleep(2000);
     }
 
-    // New
     private static void MonitorProgress(User user)
     {
         if (user.ActiveGoal == null) return;
@@ -267,12 +266,52 @@ public class Program
             if (choice == DashboardMenu.Logout) inDashboard = false;
             else if (choice == "Create a new savings goal")
             {
-                var newGoal = Goal.Create();
-                if (newGoal != null) 
-                { 
-                    user.ActiveGoal = newGoal;
-                    user.CurrentSavings = 0; 
-                    UserRepository.SaveGoal(user.Username, newGoal, 0, user.Contributions); 
+                bool proceedWithCreation = true;
+
+                if (user.ActiveGoal != null)
+                {
+                    AnsiConsole.MarkupLine($"[yellow]![/] A goal [bold]'{user.ActiveGoal.Name}'[/] already exists.");
+
+                    var summaryTable = new Table().Border(TableBorder.None).HideHeaders().AddColumn("Data");
+                        summaryTable.AddRow($"[red]•[/] Goal: [bold]{user.ActiveGoal.Name}[/]");
+                        summaryTable.AddRow($"[red]•[/] Saved: {user.CurrentSavings:C2}");
+                        summaryTable.AddRow($"[red]•[/] Contribution History: {user.Contributions.Count} contribution(s)");
+
+                     AnsiConsole.Write(new Panel(summaryTable)
+                        .Header("[bold red] DATA DELETION SUMMARY [/]")
+                        .BorderColor(Color.Red)
+                        .Padding(1, 1));
+
+                    if (AnsiConsole
+                        .Confirm("Creating a new goal will [red]delete all current progress and contributions[/]. Proceed?"))
+                    {
+                        user.ActiveGoal = null;
+                        user.CurrentSavings = 0;
+                        user.Contributions.Clear();
+
+                        string path = $"{user.Username}_goal.txt";
+                        if (File.Exists(path)) File.Delete(path);
+
+                        AnsiConsole.MarkupLine("[grey]Existing goal and history cleared.[/]");
+                    }
+                    else
+                    {
+                        proceedWithCreation = false;
+                    }
+                }
+
+                if (proceedWithCreation)
+                {
+                    var newGoal = Goal.Create();
+                    if (newGoal != null)
+                    {
+                        user.ActiveGoal = newGoal;
+                        user.CurrentSavings = 0;
+
+                        // Save fresh (this overwrites or creates the new file)
+                        UserRepository.SaveGoal(user.Username, newGoal, 0, user.Contributions); 
+
+                    }   
                 }
             }
             else if (choice == "Log a contribution") LogContribution(user);
