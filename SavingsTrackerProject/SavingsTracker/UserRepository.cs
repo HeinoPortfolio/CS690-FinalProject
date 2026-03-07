@@ -33,7 +33,7 @@ public static class UserRepository
     public static void SaveGoal(string username, Goal goal, double currentSavings, List<Contribution> history)
     {
        
-        string historyData = string.Join(";", history.Select(c => $"{c.Amount}_{c.Date.ToString("O")}"));
+        string historyData = string.Join(";", history.Select(contri => $"{contri.Amount}_{contri.Date.ToString("O")}"));
 
 
         string content = $"{goal.Name}|{goal.TargetAmount}|{goal.TimeFrame}|{goal.CreatedAt.ToString("O")}|{goal.EndDate.ToString("O")}|{currentSavings}|{historyData}";
@@ -87,5 +87,3 @@ public static class UserRepository
         
     }
 }
-
-
