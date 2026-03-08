@@ -31,13 +31,17 @@ public class Goal
 
     private static DateTime CalculateEndDate(DateTime start, string timeframe)
     {
-        var match = Regex.Match(timeframe.ToLower(), @"(\d+)\s*(day|month|year)");
+        var match = Regex.Match(timeframe.ToLower(), @"(\d+)\s*(day|week|month|year)");
+
         if (match.Success)
         {
             int value = int.Parse(match.Groups[1].Value);
+
             string unit = match.Groups[2].Value;
 
             if (unit.StartsWith("day")) return start.AddDays(value);
+
+            if (unit.StartsWith("week")) return start.AddDays(value * 7);
 
             if (unit.StartsWith("year")) return start.AddYears(value);
 
