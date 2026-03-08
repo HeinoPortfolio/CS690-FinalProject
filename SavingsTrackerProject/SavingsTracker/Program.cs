@@ -189,8 +189,12 @@ public class Program
         }
         else 
         {
-            AnsiConsole.MarkupLine($"[green]✓[/] {amount:C2} added! New Total: $ {user.CurrentSavings:C2}");
-            Thread.Sleep(2000);
+            
+            AnsiConsole.MarkupLine($"[green]✓[/] {amount:C2} added! New Total: [bold]{user.CurrentSavings:C2}[/]");
+            AnsiConsole.WriteLine();
+            AnsiConsole.MarkupLine("[grey]Press any key to continue...[/]");
+            Console.ReadKey(true);
+
         }
     }
 
