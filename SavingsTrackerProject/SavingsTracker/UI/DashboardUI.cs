@@ -88,27 +88,14 @@ public static class DashboardUI
 
     private static void HandleCreateGoal(User user)
     {
-        if (user.ActiveGoal != null)
-        {
-            AnsiConsole.MarkupLine($"[yellow]![/] A goal [bold]'{user.ActiveGoal.Name}'[/] already exists.");
-            
-            if (AnsiConsole.Confirm("Creating a new goal will [red]delete all current progress[/]. Proceed?"))
-            {
-                user.ActiveGoal = null;
-                user.CurrentSavings = 0;
-                user.Contributions.Clear();
-                string path = $"{user.Username}_goal.txt";
-                if (File.Exists(path)) File.Delete(path);
-            }
-            else return;
-        }
 
-        var newGoal = GoalUI.PromptForGoal();
+        var newGoal = GoalUI.PromptForGoal(user);
+
         if (newGoal != null)
         {
             user.ActiveGoal = newGoal;
-            user.CurrentSavings = 0;
-            UserRepository.SaveGoal(user.Username, newGoal, 0, user.Contributions);
+            UserRepository.SaveGoal(user.Username, newGoal, user.CurrentSavings, user.Contributions);
+        
         }
     }
 

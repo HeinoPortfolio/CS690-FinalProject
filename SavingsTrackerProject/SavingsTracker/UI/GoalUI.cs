@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Spectre.Console;
 using SavingsTracker.Data;
 
@@ -6,8 +5,13 @@ namespace SavingsTracker.UI;
 
 public static class GoalUI
 {
-    public static Goal? PromptForGoal()
+    public static Goal? PromptForGoal(User user)
     {
+        if (user.ActiveGoal != null)
+        {
+            if (!ConfirmGoalDeletion(user)) return null; 
+        }
+
         while (true)
         {
             AnsiConsole.Clear();
@@ -20,12 +24,44 @@ public static class GoalUI
 
             var tempGoal = new Goal(name, amount, timeframe, DateTime.Now);
 
-            // Show the review panel =============
             RenderReviewPanel(tempGoal);
 
             if (AnsiConsole.Confirm("Is this information correct?")) return tempGoal;
             if (!AnsiConsole.Confirm("Try again?")) return null;
         }
+    }
+
+    private static bool ConfirmGoalDeletion(User user)
+    {
+        
+        AnsiConsole.MarkupLine($"[yellow]![/] A goal [bold]'{user.ActiveGoal!.Name}'[/] already exists.");
+
+        var summaryTable = new Table().Border(TableBorder.None).HideHeaders().AddColumn("Data");
+        summaryTable.AddRow($"[red]•[/] Goal: [bold]{user.ActiveGoal.Name}[/]");
+        summaryTable.AddRow($"[red]•[/] Saved: [yellow]{user.CurrentSavings:C2}[/]");
+        summaryTable.AddRow($"[red]•[/] History: {user.Contributions.Count} contribution(s)");
+
+        // DISPLAY THE SUMMARY
+        AnsiConsole.Write(new Panel(summaryTable)
+            .Header("[bold red] DATA DELETION SUMMARY [/]")
+            .BorderColor(Color.Red)
+            .Padding(1, 1));
+
+        if (AnsiConsole.Confirm("Creating a new goal will [red]delete all current progress[/]. Proceed?"))
+        {
+            user.ActiveGoal = null;
+            user.CurrentSavings = 0;
+            user.Contributions.Clear();
+
+            string path = $"{user.Username}_goal.txt";
+            if (File.Exists(path)) File.Delete(path);
+
+            AnsiConsole.MarkupLine("[green]✔ Existing goal and history cleared.[/]");
+            Thread.Sleep(1200); 
+            return true;
+        }
+
+        return false;
     }
 
     private static void RenderReviewPanel(Goal goal)
