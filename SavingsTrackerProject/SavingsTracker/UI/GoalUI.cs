@@ -13,7 +13,7 @@ public static class GoalUI
             AnsiConsole.Clear();
             AnsiConsole.Write(new Rule($"[{Palette.Brand.ToMarkup()}]Create New Savings Goal[/]").Centered());
 
-            var name = AnsiConsole.Ask<string>($"[{Palette.Accent.ToMarkup()}]>[/] Name of new savings goal (v2):");
+            var name = AnsiConsole.Ask<string>($"[{Palette.Accent.ToMarkup()}]>[/] Name of new savings goal:");
             var amount = AnsiConsole.Prompt(new TextPrompt<double>($"[{Palette.Accent.ToMarkup()}]>[/] Amount for goal: $")
                 .Validate(amt => amt > 0 ? ValidationResult.Success() : ValidationResult.Error("[red]Amount must be > 0[/]")));
             var timeframe = AnsiConsole.Ask<string>($"[{Palette.Accent.ToMarkup()}]>[/] Time frame (e.g., '1 year', '8 months'): ");
