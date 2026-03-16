@@ -2,7 +2,7 @@
 using Spectre.Console.Rendering;
 using System.Text;
 
-// New Classes =====================================
+// Data and UI namespaces
 using SavingsTracker.Data;
 using SavingsTracker.UI;
 
@@ -15,16 +15,13 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-        
         Console.OutputEncoding = Encoding.UTF8;
-
         Console.InputEncoding = Encoding.UTF8;
         
         // Load existing users from the text file at startup
         _userDatabase = UserRepository.LoadUsers();
 
         int selectedIndex = 0;
-
         bool isRunning = true;
 
         while (isRunning)
@@ -34,67 +31,47 @@ public class Program
 
             // Live display for the main selection dashboard
             await AnsiConsole.Live(GetMainContainer(selectedIndex)).StartAsync(async ctx =>
+            {
+                ctx.Refresh();
+                while (true)
                 {
-                    ctx.Refresh();
+                    var key = Console.ReadKey(true).Key;
 
-                    while (true)
-                    {
-                        var key = Console.ReadKey(true).Key;
+                    if (key == ConsoleKey.UpArrow)
+                        selectedIndex = (selectedIndex == 0) ? menuItems.Length - 1 : selectedIndex - 1;
+                    else if (key == ConsoleKey.DownArrow)
+                        selectedIndex = (selectedIndex == menuItems.Length - 1) ? 0 : selectedIndex + 1;
+                    else if (key == ConsoleKey.Enter) break;
 
-                        if (key == ConsoleKey.UpArrow)
-                            selectedIndex = (selectedIndex == 0) ? menuItems.Length - 1 : selectedIndex - 1;
-                        else if (key == ConsoleKey.DownArrow)
-                            selectedIndex = (selectedIndex == menuItems.Length - 1) ? 0 : selectedIndex + 1;
-                        else if (key == ConsoleKey.Enter) break;
-
-                        ctx.UpdateTarget(GetMainContainer(selectedIndex));
-                    }
-                });
-
+                    ctx.UpdateTarget(GetMainContainer(selectedIndex));
+                }
+            });
 
             string choice = menuItems[selectedIndex];
 
             if (choice == "Create an Account")
             {
                 AccountUI.CreateAccount(_userDatabase);
-
             } 
-            else if (choice == "Login") Login();
-            else isRunning = false;
+            else if (choice == "Login") 
+            {
+                var user = LoginUI.Login(_userDatabase);
+                
+                if (user != null)
+                {
+                    DashboardUI.Show(user, Header, MonitorProgress);
+                }
+            }
+            else 
+            {
+                isRunning = false;
+            }
         }
 
         AnsiConsole.MarkupLine("[bold blue]Goodbye!.[/]");
     }
 
-    private static void Login()
-    {
-        AnsiConsole.Clear();
-        AnsiConsole.Write(new Rule($"[{Palette.Brand.ToMarkup()}]Secure Login[/]").LeftJustified());
-
-        var username = AnsiConsole.Ask<string>("Username:");
-        var password = AnsiConsole.Prompt(new TextPrompt<string>("Password:").Secret());
-
-        var user = _userDatabase.FirstOrDefault(u => u.Username == username && u.Password == password);
-
-        if (user != null)
-        {
-
-            var (goal, savings, history) = UserRepository.LoadGoal(user.Username);
-
-            user.ActiveGoal = goal;
-            user.CurrentSavings = savings;
-            user.Contributions = history;
-
-            DashboardUI.Show(user, Header, MonitorProgress);
-        }
-        else
-        {
-            AnsiConsole.MarkupLine("[red]![/] Invalid credentials.");
-            Thread.Sleep(1500);
-            Login();
-        }
-    }
-
+    
     private static void MonitorProgress(User user)
     {
         if (user.ActiveGoal == null) return;
@@ -102,14 +79,11 @@ public class Program
         AnsiConsole.Clear();
         Header();
 
-        // Call the new UI class
         ProgressUI.RenderStats(user);
 
         AnsiConsole.WriteLine();
-        // Use a manual wait to prevent the "reverting" issue
         AnsiConsole.MarkupLine($"[{Palette.Brand.ToMarkup()}]Analysis Complete.[/] Press [yellow]ENTER[/] to return...");
         Console.ReadLine();
-       
     }
 
     private static void Header()
@@ -141,4 +115,3 @@ public class Program
             .Border(BoxBorder.Double).BorderColor(Palette.Border).Expand();
     }
 }
-
