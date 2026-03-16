@@ -54,49 +54,16 @@ public class Program
 
             string choice = menuItems[selectedIndex];
 
-            if (choice == "Create an Account") CreateAccount();
+            if (choice == "Create an Account")
+            {
+                AccountUI.CreateAccount(_userDatabase);
+
+            } 
             else if (choice == "Login") Login();
             else isRunning = false;
         }
 
         AnsiConsole.MarkupLine("[bold blue]Goodbye!.[/]");
-    }
-
-    private static void CreateAccount()
-    {
-        AnsiConsole.Clear();
-        AnsiConsole.Write(new Rule($"[{Palette.Brand.ToMarkup()}]Account Registration[/]").LeftJustified());
-
-        var username = AnsiConsole.Ask<string>($"[{Palette.Accent.ToMarkup()}]>[/] Username:");
-        var password = AnsiConsole.Prompt(new TextPrompt<string>($"[{Palette.Accent.ToMarkup()}]>[/] Password:").Secret());
-
-        // Review Table to verify information before saving
-        var table = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
-
-        table.AddColumn(new TableColumn("Field").Centered());
-        table.AddColumn(new TableColumn("Value").LeftAligned());
-        table.AddRow("Username", username);
-        table.AddRow("Password", "[grey]********[/]");
-
-        AnsiConsole.Write(new Panel(table).Header("Review Your Information").BorderColor(Palette.Brand));
-
-        if (AnsiConsole.Confirm("\nIs this correct?"))
-        {
-            if (_userDatabase.Any(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
-            {
-                AnsiConsole.MarkupLine("[red]![/] Error: Username already exists.");
-                Console.ReadKey(true);
-            }
-            else
-            {
-                var newUser = new User(username, password);
-                _userDatabase.Add(newUser);
-                UserRepository.SaveUser(newUser);
-                AnsiConsole.MarkupLine($"[bold {Palette.Brand.ToMarkup()}]✓[/] Account saved successfully.");
-                Thread.Sleep(1000);
-            }
-        }
-        else { CreateAccount(); }
     }
 
     private static void Login()
@@ -128,137 +95,21 @@ public class Program
         }
     }
 
-    private static void LogContribution(User user)
-    {
-         if (user.ActiveGoal == null) return;
-         
-        AnsiConsole.Clear(); Header();
-        AnsiConsole.Write(new Rule($"[{Palette.Brand.ToMarkup()}]Log Contribution[/]").Centered());
-        
-        var amount = AnsiConsole.Prompt(new TextPrompt<double>($"[{Palette.Accent.ToMarkup()}]>[/] Amount to contribute: $")
-            .Validate(n => n > 0 ? ValidationResult.Success() : ValidationResult.Error("[red]Must be > 0[/]")));
-
-        user.CurrentSavings += amount;
-        user.Contributions.Add(new Contribution(amount, DateTime.Now));
-
-        UserRepository.SaveGoal(user.Username, user.ActiveGoal
-            , user.CurrentSavings
-            , user.Contributions);
-    
-        if (user.CurrentSavings >= user.ActiveGoal.TargetAmount)
-        {
-            AnsiConsole.Clear();
-            Header();
-
-            var goldPanel = new Panel(Align.Center(
-                new Rows(
-                    new Text("★ SAVINGS GOAL ACHIEVED ★", new Style(Color.Gold1, decoration: Decoration.Bold)),
-                    new Text("\n"),
-                    new Text($"GOLD STATUS REACHED!", new Style(Color.Yellow, decoration: Decoration.Bold)),
-                    new Text($"You've successfully saved {user.CurrentSavings:C2} for '{user.ActiveGoal.Name}'", new Style(Palette.TextDim)),
-                    new Text("\n[ Press any key to continue ]", new Style(Color.Grey))
-                ), 
-                VerticalAlignment.Middle))
-                .BorderColor(Color.Gold1)
-                .Border(BoxBorder.Double)
-                .Padding(2, 2)
-                .Expand();
-
-            AnsiConsole.Write(goldPanel);
-            Console.ReadKey(true);
-
-            if (AnsiConsole.Confirm("[red]Goal reached![/] Would you like to [bold red]delete[/] this goal and all contribution history now?"))
-            {
-                
-                user.ActiveGoal = null;
-                user.CurrentSavings = 0;
-                user.Contributions.Clear();
-
-                string path = $"{user.Username}_goal.txt";
-                if (File.Exists(path))
-                {
-                    try 
-                    {
-                        File.Delete(path);
-                        AnsiConsole.MarkupLine("[grey]✓ Success: Goal file permanently removed.[/]");
-                    }
-                    catch (IOException ex)
-                    {
-                        AnsiConsole.MarkupLine($"[red]! Error deleting file: {ex.Message}[/]");
-                    }
-                }
-    
-                 Thread.Sleep(1500);
-            }
-        }
-        else 
-        {
-            
-            AnsiConsole.MarkupLine($"[green]✓[/] {amount:C2} added! New Total: [bold]{user.CurrentSavings:C2}[/]");
-            AnsiConsole.WriteLine();
-            AnsiConsole.MarkupLine("[grey]Press any key to continue...[/]");
-            Console.ReadKey(true);
-
-        }
-    }
-
     private static void MonitorProgress(User user)
     {
         if (user.ActiveGoal == null) return;
-        if (user.Contributions == null) user.Contributions = new List<Contribution>();
 
         AnsiConsole.Clear();
         Header();
 
-        var goal = user.ActiveGoal;
-        double current = user.CurrentSavings;
-    
-        double target = goal.TargetAmount > 0 ? goal.TargetAmount : 1; 
-        double remaining = Math.Max(0, target - current);
-        
-        var chart = new BreakdownChart()
-            .FullSize()
-            .AddItem("Saved: $", current, Palette.StatusBar)
-            .AddItem("Remaining: $", remaining, Palette.TextDim);
-
-        var infoTable = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
-            infoTable.AddColumn("[grey]Timeline & Totals[/]");
-            infoTable.AddColumn(new TableColumn("[grey]Value[/]").RightAligned());
-            infoTable.AddRow("Goal Start Date", goal.CreatedAt.ToString("MMMM dd, yyyy") ?? "N/A");
-            infoTable.AddRow("Target End Date", goal.EndDate.ToString("MMMM dd, yyyy") ?? "N/A");
-            infoTable.AddEmptyRow();
-            infoTable.AddRow("Target Goal Amount", $"{target:C2}");
-            infoTable.AddRow("Total Amount Saved", $"[green]{current:C2}[/]");
-
-        var historyList = new List<IRenderable>();
-        
-        if (user.Contributions.Any())
-        {
-            foreach (var cont in user.Contributions)
-            {
-                historyList.Add(new Text($" • {cont.Amount:C2} logged on {cont.Date:MMMM dd, yyyy}", new Style(Palette.TextDim)));
-            }
-        }
-        else
-        {
-            historyList.Add(new Text(" No contributions logged yet.", new Style(Palette.TextDim)));
-        }
-
-        var mainLayout = new Panel(new Rows(
-            new Text($"Progress Analysis: {goal.Name}", new Style(Palette.Brand, decoration: Decoration.Bold)),
-            new Padder(chart, new Padding(0, 1, 0, 1)),
-            infoTable,
-            new Panel(new Rows(historyList)).Header(" Contribution History ").BorderColor(Palette.Border)
-        ))
-        .BorderColor(Palette.Border)
-        .Padding(2, 1, 2, 1);
-
-        AnsiConsole.Write(mainLayout);
+        // Call the new UI class
+        ProgressUI.RenderStats(user);
 
         AnsiConsole.WriteLine();
         // Use a manual wait to prevent the "reverting" issue
         AnsiConsole.MarkupLine($"[{Palette.Brand.ToMarkup()}]Analysis Complete.[/] Press [yellow]ENTER[/] to return...");
-        Console.ReadLine(); 
+        Console.ReadLine();
+       
     }
 
 
@@ -369,7 +220,7 @@ public class Program
 
                 if (proceedWithCreation)
                 {
-                   // var newGoal = Goal.Create();
+                  
                     var newGoal = GoalUI.PromptForGoal();
                     if (newGoal != null)
                     {
@@ -382,7 +233,11 @@ public class Program
                     }   
                 }
             }
-            else if (choice == "Log a contribution") LogContribution(user);
+            else if (choice == "Log a contribution")
+            {
+                ContributionUI.LogContribution(user, Header);
+            } 
+            //LogContribution(user);
             else if (choice == "Monitor progress toward the goal")
             {
                 MonitorProgress(user);
