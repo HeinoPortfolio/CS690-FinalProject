@@ -4,6 +4,7 @@ using System.Text;
 
 // New Classes
 using SavingsTracker.Data;
+using SavingsTracker.UI;
 
 namespace SavingsTracker;
 
@@ -368,7 +369,8 @@ public class Program
 
                 if (proceedWithCreation)
                 {
-                    var newGoal = Goal.Create();
+                   // var newGoal = Goal.Create();
+                    var newGoal = GoalUI.PromptForGoal();
                     if (newGoal != null)
                     {
                         user.ActiveGoal = newGoal;
