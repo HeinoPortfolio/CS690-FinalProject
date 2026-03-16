@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using Spectre.Console;
 
-namespace SavingsTracker;
+namespace SavingsTracker.Data;
 
 public class Goal
 {

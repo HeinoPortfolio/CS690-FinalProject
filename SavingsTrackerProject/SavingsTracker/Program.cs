@@ -2,6 +2,9 @@
 using Spectre.Console.Rendering;
 using System.Text;
 
+// New Classes
+using SavingsTracker.Data;
+
 namespace SavingsTracker;
 
 public class Program
