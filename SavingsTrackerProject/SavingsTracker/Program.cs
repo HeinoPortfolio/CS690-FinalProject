@@ -133,7 +133,6 @@ public class Program
                 double target = goal.TargetAmount;
                 double percentComplete = current / target;
 
-                // New
                 Panel ? achievementPanel = null;
 
                 if (current >= target &&  target> 0)

@@ -17,11 +17,9 @@ public static class ContributionUI
         var amount = AnsiConsole.Prompt(new TextPrompt<double>($"[{Palette.Accent.ToMarkup()}]>[/] Amount to contribute: $")
             .Validate(n => n > 0 ? ValidationResult.Success() : ValidationResult.Error("[red]Must be > 0[/]")));
 
-        // Update Model
         user.CurrentSavings += amount;
         user.Contributions.Add(new Contribution(amount, DateTime.Now));
 
-        // Persist Data
         UserRepository.SaveGoal(user.Username, user.ActiveGoal, user.CurrentSavings, user.Contributions);
 
         if (user.CurrentSavings >= user.ActiveGoal.TargetAmount)

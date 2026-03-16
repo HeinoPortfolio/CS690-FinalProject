@@ -28,7 +28,7 @@ public static class AccountUI
             {
                 AnsiConsole.MarkupLine("[red]![/] Error: Username already exists.");
                 Console.ReadKey(true);
-                // Recursive call to restart the process
+            
                 CreateAccount(userDatabase);
             }
             else
