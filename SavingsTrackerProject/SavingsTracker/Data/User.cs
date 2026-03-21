@@ -1,4 +1,4 @@
-namespace SavingsTracker;
+namespace SavingsTracker.Data;
 
 public record User(string Username, string Password)
 {
