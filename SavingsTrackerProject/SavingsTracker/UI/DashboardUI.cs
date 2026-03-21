@@ -41,6 +41,10 @@ public static class DashboardUI
                 ContributionUI.LogContribution(user, renderHeader);
             else if (choice == "Monitor progress toward the goal") 
                 monitorProgress(user);
+            else if (choice == "Predict milestones")
+            {
+                PredictionUI.ShowPrediction(user, renderHeader);
+            }
             else
                 HandleUnimplemented(choice);
         }
