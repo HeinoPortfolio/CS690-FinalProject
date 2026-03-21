@@ -17,7 +17,7 @@ public static class ProgressUI
         
         var chart = new BreakdownChart()
             .FullSize()
-            .AddItem("Saved (2): $", current, Palette.StatusBar)
+            .AddItem("Saved: $", current, Palette.StatusBar)
             .AddItem("Remaining: $", remaining, Palette.TextDim);
 
         var infoTable = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
