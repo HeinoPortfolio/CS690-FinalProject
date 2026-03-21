@@ -1,6 +1,6 @@
 using Spectre.Console;
 
-namespace SavingsTracker;
+namespace SavingsTracker.UI;
 
 public static class Palette
 {
