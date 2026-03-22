@@ -4,22 +4,19 @@ namespace SavingsTracker.Logic;
 
 public static class SavingsPredictor
 {
-    public record MilestonePrediction(double RequiredRate, double RemainingAmount, double TimeUnitsLeft, string Unit);
-
     public static MilestonePrediction? CalculateRequiredRate(User user)
     {
-        if (user.ActiveGoal == null || user.CurrentSavings >= user.ActiveGoal.TargetAmount)
-            return null;
+        if (user.ActiveGoal == null) return null;
 
         var goal = user.ActiveGoal;
-        double gap = goal.TargetAmount - user.CurrentSavings;
+        double current = user.CurrentSavings;
+        double target = goal.TargetAmount;
+        double gap = target - current;
         TimeSpan timeLeft = goal.EndDate - DateTime.Now;
 
-        if (timeLeft.TotalDays <= 0) 
-            return new MilestonePrediction(gap, gap, 0, "overdue");
-
+ 
         string unit = "month";
-        double unitsLeft = timeLeft.TotalDays / 30.44; 
+        double unitsLeft = timeLeft.TotalDays / 30.44;
 
         if (goal.TimeFrame.Contains("day", StringComparison.OrdinalIgnoreCase))
         {
@@ -37,12 +34,44 @@ public static class SavingsPredictor
             unitsLeft = timeLeft.TotalDays / 365.25;
         }
 
-        unitsLeft = Math.Max(unitsLeft, 0.1); 
+        unitsLeft = timeLeft.TotalDays <= 0 ? 0 : Math.Max(unitsLeft, 0.1);
+
+        // Milestone Projections (25%, 50%, 75%, 90%)
+        var milestones = new List<MilestoneDetail>();
+        double[] targetPercents = { 0.25, 0.50, 0.75, 0.90 };
         
+        // Rate needed from today to hit the goal exactly on the EndDate
+        double dailyRateNeeded = (timeLeft.TotalDays > 0) ? gap / timeLeft.TotalDays : 0;
+
+        foreach (var p in targetPercents)
+        {
+            double targetVal = target * p;
+            bool achieved = current >= targetVal;
+            
+            DateTime projectedDate;
+            if (achieved)
+            {
+                projectedDate = DateTime.Now;
+            }
+            else
+            {
+                double amountNeeded = targetVal - current;
+                double daysToTarget = dailyRateNeeded > 0 ? amountNeeded / dailyRateNeeded : 0;
+                projectedDate = DateTime.Now.AddDays(daysToTarget);
+            }
+
+            milestones.Add(new MilestoneDetail($"{(int)(p * 100)}%", projectedDate, achieved));
+        }
+
+        double completion = Math.Clamp((current / target) * 100, 0, 100);
+
         return new MilestonePrediction(
-            Math.Round(gap / unitsLeft, 2), 
-            Math.Round(gap, 2), 
-            Math.Round(unitsLeft, 1), 
-            unit);
+            Math.Round(gap / (unitsLeft > 0 ? unitsLeft : 1), 2),
+            Math.Round(gap, 2),
+            Math.Round(unitsLeft, 1),
+            unit,
+            milestones,
+            Math.Round(completion, 1)
+        );
     }
 }
