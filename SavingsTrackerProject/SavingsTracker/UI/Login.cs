@@ -24,6 +24,8 @@ public static class LoginUI
             user.CurrentSavings = savings;
             user.Contributions = history;
 
+            user.DailyTransactions = UserRepository.LoadTransactions(user.Username);
+
             return user;
         }
         else

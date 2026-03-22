@@ -45,6 +45,10 @@ public static class DashboardUI
             {
                 PredictionUI.ShowPrediction(user, renderHeader);
             }
+            else if (choice == "Log daily transactions")
+            {
+                TransactionUI.LogDailyTransaction(user, renderHeader);
+            }
             else
                 HandleUnimplemented(choice);
         }
