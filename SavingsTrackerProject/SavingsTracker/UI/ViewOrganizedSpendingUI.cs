@@ -3,7 +3,7 @@ using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
 
-public static class SpendingAnalysisUI
+public static class ViewOrganizedUI
 {
     public static void ViewOrganizedSpending(User user, Action renderHeader)
     {

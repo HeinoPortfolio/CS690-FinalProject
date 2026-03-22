@@ -51,7 +51,7 @@ public static class DashboardUI
             }
             else if (choice == "View organized spending")
             {
-                SpendingAnalysisUI.ViewOrganizedSpending(user, renderHeader);
+                ViewOrganizedUI.ViewOrganizedSpending(user, renderHeader);
             }
             else
                 HandleUnimplemented(choice);
