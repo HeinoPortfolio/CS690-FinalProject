@@ -57,6 +57,10 @@ public static class DashboardUI
             {
                 CategoryReviewUI.ReviewCategorySpending(user, renderHeader);
             }
+            else if (choice == "Identify spending triggers")
+            {
+                TriggerUI.IdentifyTriggers(user, renderHeader);
+            }
             else
                 HandleUnimplemented(choice);
         }
