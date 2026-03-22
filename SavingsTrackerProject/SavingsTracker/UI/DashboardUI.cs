@@ -53,6 +53,10 @@ public static class DashboardUI
             {
                 ViewOrganizedUI.ViewOrganizedSpending(user, renderHeader);
             }
+            else if (choice == "Review specific category spending")
+            {
+                CategoryReviewUI.ReviewCategorySpending(user, renderHeader);
+            }
             else
                 HandleUnimplemented(choice);
         }
