@@ -88,4 +88,33 @@ public static class UserRepository
         return(null, 0, history);
         
     }
+
+    public static void SaveTransactions(string username, List<Transaction> transactions)
+    {
+        // Uses ~ as a separator to avoid conflicts with names
+        string content = string.Join(";", transactions.Select(t => 
+            $"{t.Name}~{t.Amount}~{t.Category}~{t.Date:O}"));
+
+        File.WriteAllText($"{username}_transactions.txt", content);
+    }
+
+    public static List<Transaction> LoadTransactions(string username)
+    {
+        string path = $"{username}_transactions.txt";
+        var list = new List<Transaction>();
+        if (!File.Exists(path)) return list;
+
+        var entries = File.ReadAllText(path).Split(';', StringSplitOptions.RemoveEmptyEntries);
+    
+        foreach (var entry in entries)
+        {
+            var p = entry.Split('~');
+            if (p.Length == 4)
+            {
+                list.Add(new Transaction(p[0], double.Parse(p[1]), p[2], DateTime.Parse(p[3])));
+            }
+        }
+        return list;
+    }
+
 }
