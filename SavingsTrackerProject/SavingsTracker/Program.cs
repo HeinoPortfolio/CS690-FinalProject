@@ -89,7 +89,7 @@ public class Program
     private static void Header()
     {
         AnsiConsole.Write(new Rule($"[bold {Palette.Brand.ToMarkup()}] SAVINGS TRACKER [/]").RuleStyle(Palette.Border).Centered());
-        AnsiConsole.Write(new Text(" v1.0 ", new Style(Palette.TextDim)).Centered());
+        AnsiConsole.Write(new Text(" v2.0 ", new Style(Palette.TextDim)).Centered());
         AnsiConsole.WriteLine();
     }
 
