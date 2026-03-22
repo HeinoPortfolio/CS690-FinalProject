@@ -49,6 +49,10 @@ public static class DashboardUI
             {
                 TransactionUI.LogDailyTransaction(user, renderHeader);
             }
+            else if (choice == "View organized spending")
+            {
+                ViewOrganizedUI.ViewOrganizedSpending(user, renderHeader);
+            }
             else
                 HandleUnimplemented(choice);
         }
