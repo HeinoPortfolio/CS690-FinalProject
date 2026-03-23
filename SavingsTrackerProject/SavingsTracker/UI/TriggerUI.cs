@@ -128,7 +128,7 @@ public static class TriggerUI
 
         var table = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
         table.AddColumn("[grey]Tag[/]");
-        table.AddColumn("[grey]Date[/]"); // NEW COLUMN
+        table.AddColumn("[grey]Date[/]"); 
         table.AddColumn("[grey]Description[/]");
         table.AddColumn(new TableColumn("[grey]Amount[/]").RightAligned());
         table.AddColumn(new TableColumn("[grey]Share %[/]").RightAligned());
