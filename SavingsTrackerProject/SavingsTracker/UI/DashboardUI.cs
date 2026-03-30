@@ -61,6 +61,10 @@ public static class DashboardUI
             {
                 TriggerUI.IdentifyTriggers(user, renderHeader);
             }
+            else if (choice == "Track weekly savings consistency")
+            {
+                TrackWeeklySavingsConsistencyUI.Show(user, renderHeader);
+            }
             else
                 HandleUnimplemented(choice);
         }
