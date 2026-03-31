@@ -1,3 +1,4 @@
+
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using SavingsTracker.Data;
@@ -14,6 +15,12 @@ public static class DashboardUI
         {
             AnsiConsole.Clear();
             renderHeader();
+
+            // 1. THE PULSE: Manual time check on redraw
+            SavingsPromptsUI.CheckScheduledTime(user);
+
+            // 2. STICKY RENDER: Alert stays until manually cleared
+            SavingsPromptsUI.RenderActiveNotice();
 
             if (user.ActiveGoal != null)
             {
@@ -33,52 +40,21 @@ public static class DashboardUI
                 .AddChoiceGroup($"[{Palette.Accent.ToMarkup()}]ANALYSIS[/]")
                 .AddChoices(DashboardMenu.AnalysisOptions));
 
-            if (choice == DashboardMenu.Logout) 
-                inDashboard = false;
-            else if (choice == "Create a new savings goal") 
-                HandleCreateGoal(user);
-            else if (choice == "Log a contribution") 
-                ContributionUI.LogContribution(user, renderHeader);
-            else if (choice == "Monitor progress toward the goal") 
-                monitorProgress(user);
-            else if (choice == "Predict milestones")
-            {
-                PredictionUI.ShowPrediction(user, renderHeader);
-            }
-            else if (choice == "Log daily transactions")
-            {
-                TransactionUI.LogDailyTransaction(user, renderHeader);
-            }
-            else if (choice == "View organized spending")
-            {
-                ViewOrganizedUI.ViewOrganizedSpending(user, renderHeader);
-            }
-            else if (choice == "Review specific category spending")
-            {
-                CategoryReviewUI.ReviewCategorySpending(user, renderHeader);
-            }
-            else if (choice == "Identify spending triggers")
-            {
-                TriggerUI.IdentifyTriggers(user, renderHeader);
-            }
-            else if (choice == "Track weekly savings consistency")
-            {
-                TrackWeeklySavingsConsistencyUI.Show(user, renderHeader);
-            }
-            else if (choice == "Analyze spending proportions")
-            {
-                AnalyzeProportionsUI.Show(user, renderHeader);
-            }
-            else if (choice == "Evaluate purchase impact")
-            {
-                EvaluateImpactUI.Show(user, renderHeader);
-            }
-            else if (choice == "Review monthly financial performance")
-            {
-                MonthlyPerformanceUI.Show(user, renderHeader);
-            }
-            else
-                HandleUnimplemented(choice);
+            if (choice == DashboardMenu.Logout) inDashboard = false;
+            else if (choice == "Create a new savings goal") HandleCreateGoal(user);
+            else if (choice == "Log a contribution") ContributionUI.LogContribution(user, renderHeader);
+            else if (choice == "Monitor progress toward the goal") monitorProgress(user);
+            else if (choice == "Predict milestones") PredictionUI.ShowPrediction(user, renderHeader);
+            else if (choice == "Log daily transactions") TransactionUI.LogDailyTransaction(user, renderHeader);
+            else if (choice == "View organized spending") ViewOrganizedUI.ViewOrganizedSpending(user, renderHeader);
+            else if (choice == "Review specific category spending") CategoryReviewUI.ReviewCategorySpending(user, renderHeader);
+            else if (choice == "Identify spending triggers") TriggerUI.IdentifyTriggers(user, renderHeader);
+            else if (choice == "Track weekly savings consistency") TrackWeeklySavingsConsistencyUI.Show(user, renderHeader);
+            else if (choice == "Analyze spending proportions") AnalyzeProportionsUI.Show(user, renderHeader);
+            else if (choice == "Evaluate purchase impact") EvaluateImpactUI.Show(user, renderHeader);
+            else if (choice == "Review monthly financial performance") MonthlyPerformanceUI.Show(user, renderHeader);
+            else if (choice == "Receive savings prompts") SavingsPromptsUI.Show(user, renderHeader);
+            else HandleUnimplemented(choice);
         }
     }
 
@@ -89,14 +65,6 @@ public static class DashboardUI
         double target = goal.TargetAmount;
         double remaining = Math.Max(0, target - current);
         double percentComplete = target > 0 ? current / target : 0;
-
-        Panel? achievementPanel = null;
-        if (current >= target && target > 0)
-        {
-            achievementPanel = new Panel(new Text("★ SAVINGS GOAL ACHIEVED ★", 
-                new Style(Color.Gold1, decoration: Decoration.Bold)).Centered())
-                .BorderColor(Color.Gold1).Border(BoxBorder.Double);
-        }
 
         var breakdown = new BreakdownChart().Width(60)
             .AddItem("Saved: $", current, Palette.StatusBar)
@@ -113,25 +81,22 @@ public static class DashboardUI
 
         AnsiConsole.Write(new Panel(new Rows(
             new Text($"Goal: {goal.Name}", new Style(Palette.Brand, decoration: Decoration.Bold)),
-            achievementPanel ?? (IRenderable)new Text(""),
             new Text($"Target End Date: {goal.EndDate:MMMM dd, yyyy}", new Style(Palette.TextDim)),
             new Rule().RuleStyle(Palette.Border.ToMarkup()),
-            new Padder(breakdown, new Padding(0, 1, 0, 1)), summaryTable
+            new Padder(breakdown, new Padding(0, 1, 0, 1)), 
+            summaryTable
         ))
-        .Header($" Progress for {user.Username} ")
+        .Header($" Status for {user.Username} ")
         .BorderColor(Palette.Border).Padding(2, 1, 2, 1));
     }
 
     private static void HandleCreateGoal(User user)
     {
-
         var newGoal = GoalUI.PromptForGoal(user);
-
         if (newGoal != null)
         {
             user.ActiveGoal = newGoal;
             UserRepository.SaveGoal(user.Username, newGoal, user.CurrentSavings, user.Contributions);
-        
         }
     }
 
@@ -142,3 +107,5 @@ public static class DashboardUI
         Console.ReadKey(true);
     }
 }
+
+
