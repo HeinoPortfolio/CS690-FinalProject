@@ -16,10 +16,10 @@ public static class DashboardUI
             AnsiConsole.Clear();
             renderHeader();
 
-            // 1. THE PULSE: Manual time check on redraw
+           
             SavingsPromptsUI.CheckScheduledTime(user);
 
-            // 2. STICKY RENDER: Alert stays until manually cleared
+            // Alert stays until manually cleared
             SavingsPromptsUI.RenderActiveNotice();
 
             if (user.ActiveGoal != null)
