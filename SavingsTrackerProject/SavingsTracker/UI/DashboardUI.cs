@@ -73,6 +73,10 @@ public static class DashboardUI
             {
                 EvaluateImpactUI.Show(user, renderHeader);
             }
+            else if (choice == "Review monthly financial performance")
+            {
+                MonthlyPerformanceUI.Show(user, renderHeader);
+            }
             else
                 HandleUnimplemented(choice);
         }
