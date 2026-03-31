@@ -65,6 +65,10 @@ public static class DashboardUI
             {
                 TrackWeeklySavingsConsistencyUI.Show(user, renderHeader);
             }
+            else if (choice == "Analyze spending proportions")
+            {
+                AnalyzeProportionsUI.Show(user, renderHeader);
+            }
             else
                 HandleUnimplemented(choice);
         }
