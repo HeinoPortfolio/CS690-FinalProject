@@ -69,6 +69,10 @@ public static class DashboardUI
             {
                 AnalyzeProportionsUI.Show(user, renderHeader);
             }
+            else if (choice == "Evaluate purchase impact")
+            {
+                EvaluateImpactUI.Show(user, renderHeader);
+            }
             else
                 HandleUnimplemented(choice);
         }
