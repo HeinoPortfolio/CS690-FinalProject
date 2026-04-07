@@ -4,8 +4,16 @@ using SavingsTracker.Logic;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// Provides a detailed visual prediction of how and when a user will reach their savings goal.
+/// </summary>
 public static class PredictionUI
 {
+    /// <summary>
+    /// Displays a progress chart, the recalculated savings rate, and projected milestone dates.
+    /// </summary>
+    /// <param name="user">The user profile to analyze.</param>
+    /// <param name="renderHeader">Action to display the application's top branding.</param>
     public static void ShowPrediction(User user, Action renderHeader)
     {
         AnsiConsole.Clear();
@@ -70,6 +78,9 @@ public static class PredictionUI
     }
 
   
+    /// <summary>
+    /// Returns a color based on the progress percentage for heat-map style visual feedback.
+    /// </summary>
     private static Color GetProgressColor(double percentage) => percentage switch
     {
         < 35 => Color.Red,

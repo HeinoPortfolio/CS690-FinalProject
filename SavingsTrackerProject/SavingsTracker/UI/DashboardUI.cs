@@ -1,12 +1,20 @@
-
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// The central hub of the application. Displays current goal status and navigates to all sub-menus.
+/// </summary
 public static class DashboardUI
 {
+    /// <summary>
+    /// Runs the main dashboard loop, refreshing the UI after every operation until the user logs out.
+    /// </summary>
+    /// <param name="user">The currently logged-in user.</param>
+    /// <param name="renderHeader">Action to draw the application's top branding.</param>
+    /// <param name="monitorProgress">Action to trigger the progress monitoring view.</param>
     public static void Show(User user, Action renderHeader, Action<User> monitorProgress)
     {
         bool inDashboard = true;
@@ -58,6 +66,9 @@ public static class DashboardUI
         }
     }
 
+    /// <summary>
+    /// Renders a visual breakdown of the user's progress toward their target amount.
+    /// </summary>    
     private static void RenderGoalProgress(User user)
     {
         var goal = user.ActiveGoal!;
@@ -90,6 +101,9 @@ public static class DashboardUI
         .BorderColor(Palette.Border).Padding(2, 1, 2, 1));
     }
 
+    /// <summary>
+    /// Helper to initiate the goal creation flow and persist the results.
+    /// </summary>
     private static void HandleCreateGoal(User user)
     {
         var newGoal = GoalUI.PromptForGoal(user);
@@ -100,6 +114,9 @@ public static class DashboardUI
         }
     }
 
+    /// <summary>
+    /// Catch-all for features that are in the menu but lack implementation.
+    /// </summary>
     private static void HandleUnimplemented(string choice)
     {
         AnsiConsole.Write(new Rule().RuleStyle(Palette.Border));

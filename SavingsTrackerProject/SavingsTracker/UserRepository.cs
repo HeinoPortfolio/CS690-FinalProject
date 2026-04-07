@@ -5,10 +5,19 @@ using SavingsTracker.Data;
 
 namespace SavingsTracker;
 
+
+/// <summary>
+/// Provides data persistence services for the application, handling the saving and loading 
+/// of user credentials, savings goals, contribution history, and daily transactions.
+/// </summary>
 public static class UserRepository
 {
     private const string FilePath = "users.txt";
 
+    /// <summary>
+    /// Reads the master user list from the file system.
+    /// </summary>
+    /// <returns>A list of registered User objects.</returns>
     public static List<User> LoadUsers()
     {
         var users = new List<User>();
@@ -27,11 +36,23 @@ public static class UserRepository
         return users;
     }
 
+    /// <summary>
+    /// Appends a new user's credentials to the master user file.
+    /// </summary>
+    /// <param name="user">The user object containing username and password to persist.</param>
     public static void SaveUser(User user)
     {
         File.AppendAllLines(FilePath, new [] {$"{user.Username}:{user.Password}"});
     }
 
+    /// <summary>
+    /// Persists a user's active savings goal and full contribution history to a unique text file.
+    /// Uses a combination of pipe (|), semicolon (;), and underscore (_) delimiters.
+    /// </summary>
+    /// <param name="username">The username used to identify the file.</param>
+    /// <param name="goal">The Goal object defining targets and dates.</param>
+    /// <param name="currentSavings">The current total saved amount.</param>
+    /// <param name="history">The list of individual contributions made.</param>
     public static void SaveGoal(string username, Goal goal, double currentSavings, List<Contribution> history)
     {
        
@@ -43,6 +64,11 @@ public static class UserRepository
         File.WriteAllText($"{username}_goal.txt", content);
     }
 
+    /// <summary>
+    /// Retrieves a user's goal data and contribution history from their specific data file.
+    /// </summary>
+    /// <param name="username">The username identifying which file to read.</param>
+    /// <returns>A tuple containing the Goal object (if any), total savings, and history list.</returns>
     public static (Goal? goal, double savings, List<Contribution> history) LoadGoal(string username)
     {
         string path = $"{username}_goal.txt";
@@ -89,6 +115,11 @@ public static class UserRepository
         
     }
 
+    /// <summary>
+    /// Serializes and saves the user's daily transaction list to a dedicated file.
+    /// </summary>
+    /// <param name="username">The username used to generate the filename.</param>
+    /// <param name="transactions">The collection of daily spending records to save.</param>
     public static void SaveTransactions(string username, List<Transaction> transactions)
     {
         // Uses ~ as a separator to avoid conflicts with names
@@ -98,6 +129,11 @@ public static class UserRepository
         File.WriteAllText($"{username}_transactions.txt", content);
     }
 
+    /// <summary>
+    /// Loads and deserializes daily transactions from the user's transaction file.
+    /// </summary>
+    /// <param name="username">The username identifying the source file.</param>
+    /// <returns>A list of Transaction objects retrieved from storage.</returns>
     public static List<Transaction> LoadTransactions(string username)
     {
         string path = $"{username}_transactions.txt";

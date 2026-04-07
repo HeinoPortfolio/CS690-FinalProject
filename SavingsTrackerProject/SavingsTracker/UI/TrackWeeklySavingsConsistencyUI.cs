@@ -4,8 +4,18 @@ using SavingsTracker.Logic;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// Provides a user interface for tracking and visualizing savings consistency 
+/// over the most recent 8-week period compared to a calculated target.
+/// </summary>
 public static class TrackWeeklySavingsConsistencyUI
 {
+    /// <summary>
+    /// Displays a detailed report including a normalized weekly savings target, 
+    /// a week-by-week status breakdown, and an overall consistency score.
+    /// </summary>
+    /// <param name="user">The user whose savings contributions and goals are being analyzed.</param>
+    /// <param name="renderHeader">An action delegate to render the standard application header.</param>
     public static void Show(User user, Action renderHeader)
     {
         AnsiConsole.Clear();

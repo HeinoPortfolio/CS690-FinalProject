@@ -3,8 +3,16 @@ using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// Provides a visual breakdown of user spending habits using charts and tables.
+/// </summary>
 public static class AnalyzeProportionsUI
 {
+    /// <summary>
+    /// Calculates spending per category and renders a breakdown chart and summary table.
+    /// </summary>
+    /// <param name="user">The user whose transactions will be analyzed.</param>
+    /// <param name="renderHeader">A delegate to draw the standard application header.</param>
     public static void Show(User user, Action renderHeader)
     {
         AnsiConsole.Clear();
