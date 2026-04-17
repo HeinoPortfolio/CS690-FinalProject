@@ -3,8 +3,16 @@ using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// Manages the user interface for adding funds to an active savings goal.
+/// </summary>
 public static class ContributionUI
 {
+    /// <summary>
+    /// Prompts the user for a contribution amount, updates their balance, and persists the changes.
+    /// </summary>
+    /// <param name="user">The current user session.</param>
+    /// <param name="renderHeader">Action to display the application's top branding.</param>
     public static void LogContribution(User user, Action renderHeader)
     {
         if (user.ActiveGoal == null) return;

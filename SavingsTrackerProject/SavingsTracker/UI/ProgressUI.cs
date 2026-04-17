@@ -4,8 +4,15 @@ using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// Provides a comprehensive statistical overview of a user's progress toward their goal.
+/// </summary>
 public static class ProgressUI
 {
+    /// <summary>
+    /// Renders a detailed status panel including a breakdown chart, timeline table, and historical log.
+    /// </summary>
+    /// <param name="user">The user whose progress statistics are being displayed.</param>
     public static void RenderStats(User user)
     {
         if (user.ActiveGoal == null) return;

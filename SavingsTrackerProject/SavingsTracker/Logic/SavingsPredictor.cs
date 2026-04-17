@@ -2,8 +2,16 @@ using SavingsTracker.Data;
 
 namespace SavingsTracker.Logic;
 
+/// <summary>
+/// Provides logic to analyze a user's progress and project future savings requirements.
+/// </summary>
 public static class SavingsPredictor
 {
+    /// <summary>
+    /// Analyzes the active goal to determine the required savings rate and milestone dates.
+    /// </summary>
+    /// <param name="user">The user profile containing the active goal and current balance.</param>
+    /// <returns>A prediction summary or null if no active goal exists.</returns>
     public static MilestonePrediction? CalculateRequiredRate(User user)
     {
         if (user.ActiveGoal == null) return null;
@@ -14,7 +22,7 @@ public static class SavingsPredictor
         double gap = target - current;
         TimeSpan timeLeft = goal.EndDate - DateTime.Now;
 
- 
+        // Determine the time unit based on the original goal timeframe
         string unit = "month";
         double unitsLeft = timeLeft.TotalDays / 30.44;
 
@@ -63,6 +71,7 @@ public static class SavingsPredictor
             milestones.Add(new MilestoneDetail($"{(int)(p * 100)}%", projectedDate, achieved));
         }
 
+        // Calculate total progress percentage (0-100 range)
         double completion = Math.Clamp((current / target) * 100, 0, 100);
 
         return new MilestonePrediction(

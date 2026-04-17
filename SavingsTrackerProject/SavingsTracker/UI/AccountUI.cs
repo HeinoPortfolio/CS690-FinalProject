@@ -3,8 +3,15 @@ using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// Handles account-related user interface operations using Spectre.Console.
+/// </summary>
 public static class AccountUI
 {
+    /// <summary>
+    /// Displays a registration flow to create a new user account and save it to the database.
+    /// </summary>
+    /// <param name="userDatabase">The in-memory list of existing users for validation.</param>
     public static void CreateAccount(List<User> userDatabase)
     {
         AnsiConsole.Clear();

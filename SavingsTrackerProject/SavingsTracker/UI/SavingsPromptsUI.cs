@@ -1,19 +1,28 @@
-
-
-
 using Spectre.Console;
 using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// Manages automated user reminders and notifications related to savings goals.
+/// Handles scheduling logic and state tracking for time-based alerts.
+/// </summary
 public static class SavingsPromptsUI
 {
     private static bool _notificationsEnabled = true;
     private static TimeSpan? _scheduledTime = null;
     private static DateTime? _lastTriggeredDate = null;
     
+    /// <summary>
+    /// Stores the current active notification message to be displayed globally in the UI.
+    /// </summary>
     public static string? ActiveNotice = null;
 
+    /// <summary>
+    /// Background check to determine if the current time matches the user's scheduled reminder.
+    /// Ensures notifications only trigger once per day.
+    /// </summary>
+    /// <param name="user">The current user session used to personalize the message.</param>
     public static void CheckScheduledTime(User user)
     {
         if (!_notificationsEnabled || !_scheduledTime.HasValue) return;
@@ -31,6 +40,12 @@ public static class SavingsPromptsUI
         }
     }
 
+    /// <summary>
+    /// Displays the settings menu for savings reminders, allowing users to configure 
+    /// notification timing and status.
+    /// </summary>
+    /// <param name="user">The current user session.</param>
+    /// <param name="renderHeader">Action delegate to draw the application header.</param>
     public static void Show(User user, Action renderHeader)
     {
         AnsiConsole.Clear();
@@ -97,6 +112,10 @@ public static class SavingsPromptsUI
         }
     }
 
+    /// <summary>
+    /// Renders a high-visibility alert panel at the top of the screen if a 
+    /// savings reminder has been triggered.
+    /// </summary>
     public static void RenderActiveNotice()
     {
         if (string.IsNullOrEmpty(ActiveNotice)) return;

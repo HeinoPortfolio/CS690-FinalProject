@@ -3,6 +3,10 @@ using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// Provides a user interface for identifying psychological or emotional spending triggers.
+/// Allows users to categorize transactions with behavior tags and analyze spending patterns via reports.
+/// </summary>
 public static class TriggerUI
 {
     private static List<string> CommonTriggers = new() 
@@ -10,6 +14,12 @@ public static class TriggerUI
         "Stress", "Boredom", "Social Pressure", "Impulse", "Reward" 
     };
 
+    /// <summary>
+    /// Displays the main trigger management menu, providing options to log new triggered 
+    /// transactions or view behavior-based spending reports.
+    /// </summary>
+    /// <param name="user">The current user session.</param>
+    /// <param name="renderHeader">A delegate to render the application's top branding/header.</param>
     public static void IdentifyTriggers(User user, Action renderHeader)
     {
         var triggerFile = $"{user.Username}_triggers.txt";
@@ -40,6 +50,11 @@ public static class TriggerUI
         }
     }
 
+
+    /// <summary>
+    /// Handles the workflow for associating a transaction with a behavior tag.
+    /// Supports selecting existing items from transaction history or manual entry.
+    /// </summary>
     private static void HandleLogTrigger(User user, string filePath, List<TriggeredTransaction> list)
     {
         string name = "";
@@ -106,6 +121,10 @@ public static class TriggerUI
         Thread.Sleep(1200);
     }
 
+    /// <summary>
+    /// Prompts the user for manual transaction details (name and amount).
+    /// </summary>
+    /// <returns>A tuple containing the transaction name and amount.</returns>
     private static (string name, double amount) GetManualEntry()
     {
         var n = AnsiConsole.Ask<string>($"[{Palette.Accent.ToMarkup()}]>[/] Transaction Name:");
@@ -115,6 +134,10 @@ public static class TriggerUI
         return (n, a);
     }
 
+    /// <summary>
+    /// Renders a detailed analysis table that groups transactions by behavior tags, 
+    /// showing sub-totals and the percentage share of each trigger relative to total spending.
+    /// </summary>
     private static void ShowReport(List<TriggeredTransaction> transactions)
     {
         if (!transactions.Any())
@@ -158,12 +181,20 @@ public static class TriggerUI
         Console.ReadLine();
     }
 
+
+    /// <summary>
+    /// Persists the list of triggered transactions to a flat file using a pipe-delimited format.
+    /// </summary>
     private static void SaveTriggeredTransactions(string path, List<TriggeredTransaction> data)
     {
         var lines = data.Select(t => $"{t.Name}|{t.Amount}|{t.Tag}|{t.OriginalDate:O}");
         File.WriteAllLines(path, lines);
     }
 
+    /// <summary>
+    /// Loads triggered transactions from a file and parses them into a list of TriggeredTransaction objects.
+    /// </summary>
+    /// <returns>A list of transactions linked to behavior triggers.</returns>
     private static List<TriggeredTransaction> LoadTriggeredTransactions(string path)
     {
         var list = new List<TriggeredTransaction>();

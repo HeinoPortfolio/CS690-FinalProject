@@ -8,11 +8,20 @@ using SavingsTracker.UI;
 
 namespace SavingsTracker;
 
+/// <summary>
+/// The main entry point for the Savings Tracker application.
+/// Manages the top-level application loop, user authentication routing, 
+/// and the primary navigation dashboard.
+/// </summary>
 public class Program
 {
     private static List<User> _userDatabase = new();
     private static readonly string[] menuItems = { "Create an Account", "Login", "Quit the application" };
 
+    /// <summary>
+    /// Initializes application settings, loads user data, and runs the 
+    /// interactive live-refreshing main menu.
+    /// </summary>
     public static async Task Main(string[] args)
     {
         Console.OutputEncoding = Encoding.UTF8;
@@ -71,7 +80,11 @@ public class Program
         AnsiConsole.MarkupLine("[bold blue]Goodbye!.[/]");
     }
 
-    
+    /// <summary>
+    /// Orchestrates the "Monitor Progress" workflow by clearing the display,
+    /// rendering current goal statistics, and returning to the caller upon completion.
+    /// </summary>
+    /// <param name="user">The currently authenticated user.</param>
     private static void MonitorProgress(User user)
     {
         if (user.ActiveGoal == null) return;
@@ -86,6 +99,10 @@ public class Program
         Console.ReadLine();
     }
 
+    /// <summary>
+    /// Renders the standardized global header and version information 
+    /// used across all application screens.
+    /// </summary>
     private static void Header()
     {
         AnsiConsole.Write(new Rule($"[bold {Palette.Brand.ToMarkup()}] SAVINGS TRACKER [/]").RuleStyle(Palette.Border).Centered());
@@ -93,6 +110,12 @@ public class Program
         AnsiConsole.WriteLine();
     }
 
+    /// <summary>
+    /// Constructs the visual layout for the main landing page, including 
+    /// an instruction panel and a dynamic menu with selection highlighting.
+    /// </summary>
+    /// <param name="index">The currently selected menu index for highlighting.</param>
+    /// <returns>A renderable Spectre.Console element containing the dashboard grid.</returns>
     private static IRenderable GetMainContainer(int index)
     {
         var leftPanel = new Panel(new Rows(

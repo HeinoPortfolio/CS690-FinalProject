@@ -3,8 +3,16 @@ using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// Manages the user interface for creating and confirming savings goals.
+/// </summary>
 public static class GoalUI
 {
+    /// <summary>
+    /// Orchestrates the goal creation flow, including input prompts and review panels.
+    /// </summary>
+    /// <param name="user">The current user session.</param>
+    /// <returns>A new Goal object if successful; otherwise, null.</returns>
     public static Goal? PromptForGoal(User user)
     {
         if (user.ActiveGoal != null)
@@ -31,6 +39,9 @@ public static class GoalUI
         }
     }
 
+    /// <summary>
+    /// Shows a warning and summary of data that will be lost if a new goal replaces the current one.
+    /// </summary>
     private static bool ConfirmGoalDeletion(User user)
     {
         
@@ -64,6 +75,9 @@ public static class GoalUI
         return false;
     }
 
+    /// <summary>
+    /// Renders a side-by-side calendar view (start vs end date) and a data table for final review.
+    /// </summary>
     private static void RenderReviewPanel(Goal goal)
     {
         var startCal = new Calendar(goal.CreatedAt).AddCalendarEvent(goal.CreatedAt)

@@ -3,8 +3,17 @@ using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
 
+
+/// <summary>
+/// Provides a detailed drill-down view of transactions filtered by their category.
+/// </summary>
 public static class CategoryReviewUI
 {
+    /// <summary>
+    /// Displays an interactive menu for selecting a category and viewing its associated transaction history.
+    /// </summary>
+    /// <param name="user">The user whose transactions are being reviewed.</param>
+    /// <param name="renderHeader">A delegate to draw the standard application header.</param>
     public static void ReviewCategorySpending(User user, Action renderHeader)
     {
     

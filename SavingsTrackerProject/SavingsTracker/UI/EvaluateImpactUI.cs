@@ -1,10 +1,14 @@
-
 using Spectre.Console;
 using SavingsTracker.Data;
 using SavingsTracker.Logic;
 
 namespace SavingsTracker.UI;
 
+
+/// <summary>
+/// Provides a "What-If" scenario tool to help users understand how a potential 
+/// expense would delay their active savings goal.
+/// </summary>
 public static class EvaluateImpactUI
 {
     private static readonly string[] SpecifiedCategories = { 
@@ -20,6 +24,10 @@ public static class EvaluateImpactUI
         "Other"
     };
 
+    /// <summary>
+    /// Prompts for a purchase amount and category, then calculates the 
+    /// timeline setback for the user's active goal.
+    /// </summary>
     public static void Show(User user, Action renderHeader)
     {
         AnsiConsole.Clear();
@@ -65,6 +73,9 @@ public static class EvaluateImpactUI
         Console.ReadKey(true);
     }
 
+    /// <summary>
+    /// Renders a comparison table showing the delay in days and the shifted completion date.
+    /// </summary>
     private static void RenderImpactReport(double amount, string category, double daysDelay, DateTime newDate, DateTime originalDate)
     {
         var table = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();

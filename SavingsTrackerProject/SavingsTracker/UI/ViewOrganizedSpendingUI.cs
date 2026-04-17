@@ -3,8 +3,18 @@ using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// Provides a visual breakdown of user spending, utilizing charts and tables 
+/// to display total costs and percentages across different expense categories.
+/// </summary>
 public static class ViewOrganizedUI
 {
+    /// <summary>
+    /// Aggregates all daily transactions into categories and renders a 
+    /// BreakdownChart alongside a detailed summary table.
+    /// </summary>
+    /// <param name="user">The user whose transaction data will be aggregated and displayed.</param>
+    /// <param name="renderHeader">An action delegate used to display the application's header UI.</param>
     public static void ViewOrganizedSpending(User user, Action renderHeader)
     {
         if (user.DailyTransactions.Count == 0)

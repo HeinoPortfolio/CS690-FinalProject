@@ -3,8 +3,16 @@ using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// Provides a high-level overview of the user's financial health, comparing income, expenses, and savings trends.
+/// </summary>
 public static class MonthlyPerformanceUI
 {
+    /// <summary>
+    /// Prompts for monthly income and calculates net cash flow and historical savings trends.
+    /// </summary>
+    /// <param name="user">The current user session.</param>
+    /// <param name="renderHeader">Action to display the application's top branding.</param>
     public static void Show(User user, Action renderHeader)
     {
         AnsiConsole.Clear();
@@ -32,6 +40,9 @@ public static class MonthlyPerformanceUI
         Console.ReadKey(true);
     }
 
+    /// <summary>
+    /// Displays a financial statement showing income vs expenses and the resulting net balance.
+    /// </summary>
     private static void RenderCashFlowSummary(double income, double expenses, double net)
     {
         var table = new Table().Border(TableBorder.Rounded).BorderColor(Palette.Border).Expand();
@@ -50,6 +61,9 @@ public static class MonthlyPerformanceUI
             .BorderColor(Palette.Brand));
     }
 
+    /// <summary>
+    /// Renders a BarChart comparing total savings contributions over the last four months.
+    /// </summary>
     private static void RenderSavingsComparison(User user)
     {
         var chart = new BarChart()

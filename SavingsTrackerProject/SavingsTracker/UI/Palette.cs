@@ -2,6 +2,10 @@ using Spectre.Console;
 
 namespace SavingsTracker.UI;
 
+/// <summary>
+/// Defines a centralized color scheme for the application.
+/// Ensures consistent branding across all menus, tables, and charts.
+/// </summary>
 public static class Palette
 {
     public static readonly Color Brand = Color.SkyBlue1;

@@ -2,8 +2,15 @@ using Spectre.Console;
 using SavingsTracker.Data;
 
 namespace SavingsTracker.UI;
+
+/// <summary>
+/// Provides a user interface for recording daily spending and categorizing expenses.
+/// </summary>
 public static class TransactionUI
 {
+    /// <summary>
+    /// A standardized list of expense categories used to classify user transactions.
+    /// </summary>
      private static readonly string[] ExpenseCategories = 
     { 
         "Housing", 
@@ -18,6 +25,12 @@ public static class TransactionUI
         "Other" 
     };
 
+    /// <summary>
+    /// Executes the interactive workflow for capturing, validating, and persisting a new transaction.
+    /// Uses a loop to allow the user to review and correct details before saving.
+    /// </summary>
+    /// <param name="user">The current user session where the transaction will be added.</param>
+    /// <param name="renderHeader">A delegate to render the standard application header.</param>
     public static void LogDailyTransaction(User user, Action renderHeader)
     {
         bool isConfirmed = false;
