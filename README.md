@@ -1,6 +1,6 @@
-# CS 690 Final Project
+# Financial Tracker Project
 
-Project created by Matthew Heino for CS 690 Software Engineering 
+Project created by Matthew Heino for Software Engineering 
 
 ----
 
